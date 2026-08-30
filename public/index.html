@@ -361,6 +361,60 @@ html, body {
   }
 }
 </style>
+<style>
+/* Perfect Mobile Fit for Weekly Routine Table */
+@media (max-width: 768px) {
+  /* Ensure parent container stretches full width with no overflow */
+  #routineForm,
+  .routine-section,
+  .card {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-spacing: 0 !important;
+  }
+
+  /* Compact table cells */
+  table td, table th {
+    padding: 6px 2px !important;
+    font-size: 11px !important;
+  }
+
+  /* Day label column */
+  table td:first-child {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    min-width: 62px !important;
+    padding-left: 2px !important;
+  }
+
+  /* Compact time dropdowns */
+  select {
+    padding: 4px 1px !important;
+    font-size: 11px !important;
+    min-width: 34px !important;
+    height: 32px !important;
+    border-radius: 4px !important;
+  }
+
+  /* Checkbox and label fitting */
+  input[type="checkbox"] {
+    transform: scale(0.85) !important;
+    margin: 0 2px 0 0 !important;
+  }
+
+  label:has(input[type="checkbox"]),
+  td:last-child {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -651,4 +705,5 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
