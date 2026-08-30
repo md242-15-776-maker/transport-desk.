@@ -1,5 +1,5 @@
 const GOING_TIMES = ["07:00", "08:30", "10:00", "12:00"];
-const COMING_TIMES = ["11:30", "13:30", "15:00", "16:20", "18:10"];
+const COMING_TIMES = ["11:30", "13:30", "16:20", "18:10"];
 
 function format12h(hhmm) {
   const [h, m] = hhmm.split(":").map(Number);
