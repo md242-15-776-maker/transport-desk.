@@ -484,6 +484,58 @@ td:nth-child(3) {
 }
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232d6a4f%22/><text y=%2270%22 x=%2250%22 font-size=%2260%22 text-anchor=%22middle%22>🚌</text></svg>">
+<style>
+/* Border box around weekday names */
+#routineForm tr td:first-child,
+table.routine-table td:first-child,
+.routine-table tr td:first-child {
+  padding: 8px 6px !important;
+}
+
+#routineForm tr td:first-child,
+#routineForm td:first-child {
+  display: table-cell !important;
+}
+
+/* Day text wrapper with border */
+#routineForm tr td:first-child,
+.routine-section td:first-child {
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+}
+
+/* Inner box styling */
+#routineForm tbody tr td:first-child {
+  border: none !important;
+}
+
+#routineForm td:first-child span,
+#routineForm td:first-child div,
+#routineForm tr td:first-child {
+  line-height: normal;
+}
+
+/* Light Theme Day Box */
+body:not(.dark):not([data-theme="dark"]) #routineForm tr td:first-child {
+  border: 1.5px solid #2d6a4f !important;
+  background-color: rgba(45, 106, 79, 0.05) !important;
+  color: #1b4332 !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  min-width: 95px !important;
+}
+
+/* Dark Theme Day Box */
+body.dark #routineForm tr td:first-child,
+[data-theme="dark"] #routineForm tr td:first-child {
+  border: 1.5px solid #eab308 !important;
+  background-color: rgba(234, 179, 8, 0.06) !important;
+  color: #facc15 !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  min-width: 95px !important;
+}
+</style>
 </head>
 <body>
 
@@ -774,6 +826,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
