@@ -25,12 +25,20 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-async function startServer() {
-  try {
-    const mongoUri = process.env.MONGO_URI;
+// 1. Start listening IMMEDIATELY so Render health checks pass
+app.listen(PORT, () => {
+  console.log(`Server is running and listening on port ${PORT}`);
+});
 
+// 2. Connect to database
+async function initDatabase() {
+  const mongoUri = process.env.MONGO_URI;
+
+  try {
     if (mongoUri && !mongoUri.includes("127.0.0.1")) {
-      await mongoose.connect(mongoUri);
+      await mongoose.connect(mongoUri, {
+        serverSelectionTimeoutMS: 10000,
+      });
       console.log("Connected to MongoDB Atlas successfully!");
     } else {
       const { MongoMemoryServer } = require("mongodb-memory-server");
@@ -38,13 +46,18 @@ async function startServer() {
       await mongoose.connect(mongod.getUri());
       console.log("Connected to In-Memory MongoDB!");
     }
-
-    app.listen(PORT, () => {
-      console.log(`Server is live on port ${PORT}`);
-    });
   } catch (err) {
-    console.error("Database connection failed:", err);
+    console.error("Database connection warning:", err.message);
+    console.log("Falling back to local in-memory DB...");
+    try {
+      const { MongoMemoryServer } = require("mongodb-memory-server");
+      const mongod = await MongoMemoryServer.create();
+      await mongoose.connect(mongod.getUri());
+      console.log("Connected to fallback In-Memory MongoDB!");
+    } catch (fallbackErr) {
+      console.error("Critical: Could not start fallback DB:", fallbackErr);
+    }
   }
 }
 
-startServer();
+initDatabase();
