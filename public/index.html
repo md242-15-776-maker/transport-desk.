@@ -446,7 +446,7 @@ html, body {
     flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: space-between !important;
-    background: #ffffff !important;
+    background: inherit !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 12px !important;
     padding: 12px 14px !important;
@@ -528,155 +528,7 @@ html, body {
   }
 }
 </style>
-<style id="mobile-master-patch">
-/* =========================================================
-   UNIVERSAL MOBILE UI/UX ENHANCEMENT
-   ========================================================= */
 
-@media screen and (max-width: 768px) {
-  /* Prevent screen clipping and side scroll */
-  *, *::before, *::after {
-    box-sizing: border-box !important;
-  }
-  html, body {
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-  
-  /* Container Padding */
-  main, .container, #routineForm, section {
-    width: 100% !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* ----------------- 1. WEEKLY ROUTINE FORM ----------------- */
-  #routineForm table,
-  #routineForm thead,
-  #routineForm tbody,
-  #routineForm tr,
-  #routineForm td {
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Hide raw table headers on small screens */
-  #routineForm thead {
-    display: none !important;
-  }
-
-  /* Day Card wrapper */
-  #routineForm tbody tr {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 12px 14px !important;
-    margin-bottom: 12px !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.03) !important;
-  }
-
-  body.dark #routineForm tbody tr,
-  [data-theme="dark"] #routineForm tbody tr {
-    background: #18181b !important;
-    border-color: #27272a !important;
-  }
-
-  /* Day Title */
-  #routineForm tbody tr td:first-child {
-    font-size: 15px !important;
-    font-weight: 800 !important;
-    color: #1b4332 !important;
-    padding: 0 0 8px 0 !important;
-    border: none !important;
-  }
-
-  body.dark #routineForm tbody tr td:first-child,
-  [data-theme="dark"] #routineForm tbody tr td:first-child {
-    color: #facc15 !important;
-  }
-
-  /* Start & End Time Groups */
-  #routineForm tbody tr td:not(:first-child):not(:last-child) {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 4px !important;
-    padding: 3px 0 !important;
-    border: none !important;
-    width: 100% !important;
-  }
-
-  /* Touch-friendly inputs */
-  #routineForm select {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    height: 38px !important;
-    padding: 2px 4px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    border: 1px solid #cbd5e1 !important;
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-    text-align: center !important;
-  }
-
-  body.dark #routineForm select,
-  [data-theme="dark"] #routineForm select {
-    background-color: #27272a !important;
-    border-color: #3f3f46 !important;
-    color: #f4f4f5 !important;
-  }
-
-  /* No Class Checkbox Row */
-  #routineForm tbody tr td:last-child {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 8px !important;
-    padding: 10px 0 2px 0 !important;
-    margin-top: 6px !important;
-    border-top: 1px dashed #e2e8f0 !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #475569 !important;
-  }
-
-  body.dark #routineForm tbody tr td:last-child,
-  [data-theme="dark"] #routineForm tbody tr td:last-child {
-    border-color: #27272a !important;
-    color: #a1a1aa !important;
-  }
-
-  #routineForm input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    accent-color: #2d6a4f !important;
-    cursor: pointer !important;
-  }
-
-  /* Save Routine Full Width Button */
-  #routineForm button,
-  button[type="submit"] {
-    width: 100% !important;
-    height: 48px !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    border-radius: 10px !important;
-    margin-top: 12px !important;
-  }
-
-  /* ----------------- 2. DASHBOARD SCHEDULE CARDS ----------------- */
-  .dashboard-card,
-  section.card {
-    padding: 14px !important;
-    border-radius: 12px !important;
-  }
-}
-</style>
 <style>
 @media (max-width: 768px) {
   *, *::before, *::after { box-sizing: border-box !important; }
@@ -699,7 +551,7 @@ html, body {
   .routine-row, .day-row, tr, [class*="day-"] {
     display: flex !important;
     flex-direction: column !important;
-    background: #ffffff !important;
+    background: inherit !important;
     border: 1.5px solid #e2e8f0 !important;
     border-radius: 12px !important;
     padding: 14px 16px !important;
@@ -743,72 +595,38 @@ html, body {
   }
 }
 </style>
+
 <style id="dark-routine-patch">
-/* =========================================================
-   DARK THEME MOBILE ROUTINE CARDS FIX
-   ========================================================= */
+/* Adapt Mobile Cards Directly to Current Theme */
+@media screen and (max-width: 768px) {
+  #routineForm tbody tr,
+  .routine-table tbody tr {
+    background-color: var(--card-bg, var(--surface, #18181b)) !important;
+    border: 1px solid var(--border, #27272a) !important;
+    color: var(--text, #f4f4f5) !important;
+  }
 
-/* Catch all dark mode selector variations (.dark, [data-theme="dark"], body.dark-mode) */
-body.dark #routineForm tbody tr,
-[data-theme="dark"] #routineForm tbody tr,
-.dark-mode #routineForm tbody tr,
-body[class*="dark"] #routineForm tbody tr,
-body:not(.light) #routineForm tbody tr {
-  background: #18181b !important;
-  border-color: #2e2e33 !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5) !important;
-}
+  /* When body is explicitly dark or has dark background */
+  body.dark #routineForm tbody tr,
+  [data-theme="dark"] #routineForm tbody tr,
+  html.dark #routineForm tbody tr {
+    background-color: #18181b !important;
+    border-color: #2e2e33 !important;
+  }
 
-/* Day Title in Dark Mode */
-body.dark #routineForm tbody tr td:first-child,
-[data-theme="dark"] #routineForm tbody tr td:first-child,
-.dark-mode #routineForm tbody tr td:first-child,
-body[class*="dark"] #routineForm tbody tr td:first-child,
-body:not(.light) #routineForm tbody tr td:first-child {
-  color: #facc15 !important;
-}
+  /* When in light mode */
+  body.light #routineForm tbody tr,
+  [data-theme="light"] #routineForm tbody tr,
+  html.light #routineForm tbody tr {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
 
-/* Time Select Dropdowns in Dark Mode */
-body.dark #routineForm select,
-[data-theme="dark"] #routineForm select,
-.dark-mode #routineForm select,
-body[class*="dark"] #routineForm select,
-body:not(.light) #routineForm select {
-  background-color: #27272a !important;
-  border: 1px solid #3f3f46 !important;
-  color: #f4f4f5 !important;
-}
-
-/* No Class Checkbox & Label in Dark Mode */
-body.dark #routineForm tbody tr td:last-child,
-[data-theme="dark"] #routineForm tbody tr td:last-child,
-.dark-mode #routineForm tbody tr td:last-child,
-body[class*="dark"] #routineForm tbody tr td:last-child,
-body:not(.light) #routineForm tbody tr td:last-child {
-  border-top-color: #2e2e33 !important;
-  color: #a1a1aa !important;
-}
-
-/* Keep Light Mode clean and crisp */
-body.light #routineForm tbody tr,
-[data-theme="light"] #routineForm tbody tr,
-body.light-mode #routineForm tbody tr {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-}
-body.light #routineForm tbody tr td:first-child,
-[data-theme="light"] #routineForm tbody tr td:first-child {
-  color: #1b4332 !important;
-}
-body.light #routineForm select,
-[data-theme="light"] #routineForm select {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-body.light #routineForm tbody tr td:last-child,
-[data-theme="light"] #routineForm tbody tr td:last-child {
-  color: #475569 !important;
+  /* Day title adapts cleanly */
+  #routineForm tbody tr td:first-child {
+    background: transparent !important;
+    color: inherit !important;
+  }
 }
 </style>
 </head>
@@ -1101,6 +919,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
