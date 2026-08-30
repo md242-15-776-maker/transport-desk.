@@ -314,6 +314,53 @@ button:hover { background: var(--navy); }
   }
 }
 </style>
+<style>
+/* Fix Mobile Side Gap & Center Layout */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+  /* Center main content container */
+  main,
+  .container,
+  #dashboardView,
+  #routineView,
+  .content-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Make white cards stretch symmetrically */
+  .card,
+  .dashboard-card,
+  .routine-card,
+  section {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Full-width tables inside cards */
+  table {
+    width: 100% !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -604,3 +651,4 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
