@@ -415,6 +415,119 @@ html, body {
   }
 }
 </style>
+<style>
+/* Modern Mobile UX/UI for Weekly Routine */
+@media (max-width: 650px) {
+  /* Reset table container to full width card */
+  #routineForm table,
+  .routine-table,
+  table {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+  }
+
+  table thead {
+    display: none !important; /* Hide cramped headers */
+  }
+
+  table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  /* Each Day row becomes an individual sleek card */
+  table tbody tr {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    gap: 8px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+  }
+
+  body.dark table tbody tr,
+  [data-theme="dark"] table tbody tr {
+    background: #18181b !important;
+    border-color: #27272a !important;
+  }
+
+  /* Day Name Title */
+  table tbody tr td:first-child {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #1b4332 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  body.dark table tbody tr td:first-child,
+  [data-theme="dark"] table tbody tr td:first-child {
+    color: #facc15 !important;
+  }
+
+  /* No Class Checkbox aligned to top-right of the card */
+  table tbody tr td:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 0 !important;
+    margin-left: auto !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+  }
+
+  /* Time inputs grouping (Start & End) */
+  table tbody tr td:not(:first-child):not(:last-child) {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Larger touch-friendly dropdown buttons */
+  select {
+    height: 38px !important;
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    background-color: #f8fafc !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+  }
+
+  body.dark select,
+  [data-theme="dark"] select {
+    background-color: #27272a !important;
+    border-color: #3f3f46 !important;
+    color: #f4f4f5 !important;
+  }
+
+  /* Full-width submit button */
+  #routineForm button,
+  button[type="submit"] {
+    width: 100% !important;
+    height: 46px !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    margin-top: 10px !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -705,5 +818,6 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
