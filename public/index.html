@@ -629,6 +629,50 @@ html, body {
   }
 }
 </style>
+<style id="yellow-border-patch">
+/* Dark Mode Yellow/Gold Borders */
+body.dark #routineForm tbody tr,
+[data-theme="dark"] #routineForm tbody tr,
+html.dark #routineForm tbody tr,
+.dark #routineForm tbody tr {
+  border: 1.5px solid rgba(250, 204, 21, 0.4) !important;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.05) !important;
+}
+
+/* Day Title to match */
+body.dark #routineForm tbody tr td:first-child,
+[data-theme="dark"] #routineForm tbody tr td:first-child,
+html.dark #routineForm tbody tr td:first-child,
+.dark #routineForm tbody tr td:first-child {
+  color: #facc15 !important;
+}
+
+/* Dropdown input borders */
+body.dark #routineForm select,
+[data-theme="dark"] #routineForm select,
+html.dark #routineForm select,
+.dark #routineForm select {
+  border: 1px solid rgba(250, 204, 21, 0.25) !important;
+  color: #facc15 !important;
+}
+
+/* No Class divider border */
+body.dark #routineForm tbody tr td:last-child,
+[data-theme="dark"] #routineForm tbody tr td:last-child,
+html.dark #routineForm tbody tr td:last-child,
+.dark #routineForm tbody tr td:last-child {
+  border-top: 1px dashed rgba(250, 204, 21, 0.3) !important;
+  color: #a1a1aa !important;
+}
+
+/* Checkbox accent */
+body.dark #routineForm input[type="checkbox"],
+[data-theme="dark"] #routineForm input[type="checkbox"],
+html.dark #routineForm input[type="checkbox"],
+.dark #routineForm input[type="checkbox"] {
+  accent-color: #facc15 !important;
+}
+</style>
 </head>
 <body>
 
@@ -919,6 +963,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
