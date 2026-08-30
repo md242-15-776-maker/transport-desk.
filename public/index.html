@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transport Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+/* LIGHT Theme — Bright Green Hover */
+:root, [data-theme="light"] {
+  --ink:        #16231D;
+  --text:       #16231D;
+  --paper:      #F5F2E9;
+  --panel:      #FFFFFF;
+  --navy:       #1F5C3D;
+  --accent:     #1F5C3D;
+  --signal:     #2F9160;
+  --signal-dim: #DEEFE2;
+  --slate:      #667069;
+  --line:       #DCD6C6;
+  --line-dark:  #2C4A3B;
+  --alert:      #B23A2E;
+  --ok:         #2F6F4E;
+  --blob-opacity-a: 0.22;
+  --blob-opacity-b: 0.16;
+  --hero-visual-shadow: 0 30px 60px -24px rgba(31,92,61,0.35), 0 10px 24px -10px rgba(31,92,61,0.12);
+  --btn-solid-shadow: 0 10px 24px -8px rgba(47,145,96,0.45);
+  --btn-solid-hover: #3CD070;
+  --btn-solid-hover-shadow: 0 14px 28px -6px rgba(60,208,112,0.55);
+  --btn-solid-color: #16231D;
+  --float-shadow: 0 14px 28px -8px rgba(0,0,0,0.18);
+  --pill-shadow: 0 6px 14px rgba(0,0,0,0.05);
+  --title-color: #FFFFFF;
+  --title-stroke: 2px #16231D;
+  --boarding-color: #2F9160;
+  --boarding-stroke: 2.5px #16231D;
+}
+
+/* DARK Theme — Bright Electric Yellow Hover */
+[data-theme="dark"] {
+  --ink:        #0E0E0E;
+  --text:       #FFFFFF;
+  --paper:      #080808;
+  --panel:      #161616;
+  --navy:       #121212;
+  --accent:     #F5E400;
+  --signal:     #F5E400;
+  --signal-dim: #262400;
+  --slate:      #8E8E8E;
+  --line:       #262626;
+  --line-dark:  #383838;
+  --alert:      #FF5A48;
+  --ok:         #34D165;
+  --blob-opacity-a: 0.14;
+  --blob-opacity-b: 0.10;
+  --hero-visual-shadow: 0 30px 60px -24px rgba(245,228,0,0.18), 0 10px 24px -10px rgba(0,0,0,0.6);
+  --btn-solid-shadow: 0 10px 24px -8px rgba(245,228,0,0.35);
+  --btn-solid-hover: #FFF34D;
+  --btn-solid-hover-shadow: 0 14px 28px -6px rgba(245,228,0,0.6);
+  --btn-solid-color: #080808;
+  --float-shadow: 0 14px 28px -8px rgba(0,0,0,0.6);
+  --pill-shadow: 0 6px 14px rgba(0,0,0,0.4);
+  --title-color: #FFFFFF;
+  --title-stroke: 2px #000000;
+  --boarding-color: #F5E400;
+  --boarding-stroke: 2.5px #000000;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+[data-theme="dark"] .board-count.zero { color: #555555; }
+[data-theme="dark"] .unmatched { background: #3A1E19; color: #F0A99A; border-color: var(--alert); }
+.container { max-width: 760px; margin: 0 auto; padding: 0 20px 48px; flex: 1; width: 100%; }
+
+/* Sticky Nav Switcher */
+.preview-switch { position: sticky; top: 0; z-index: 50; display: flex; gap: 0; background: var(--ink); border-bottom: none; }
+.preview-switch button {
+  flex: 1; margin: 0; border-radius: 0; background: var(--ink); color: #8A96A8;
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 14px 10px; border: none; border-bottom: 3.5px solid transparent; cursor: pointer; transition: all 0.15s ease;
+}
+.preview-switch button.active { color: #FFFFFF; border-bottom-color: var(--signal); }
+
+.theme-toggle { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+.theme-toggle .tt-label {
+  display: inline-flex; align-items: center; gap: 5px; font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #9AA5B8; line-height: 1;
+}
+.theme-toggle .tt-icon { display: inline-block; font-size: 13px; line-height: 1; transform: translateY(0.5px); }
+.theme-switch { position: relative; width: 46px; height: 24px; border-radius: 12px; background: #2A2F38; border: 1px solid var(--line-dark); cursor: pointer; padding: 0; margin: 0; flex: none; }
+.theme-switch .knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--signal); transition: transform 0.2s ease, background 0.2s ease; }
+.theme-switch[aria-checked="true"] .knob { transform: translateX(22px); }
+
+.page { display: none; flex: 1; }
+.page.active { display: block; }
+
+/* Subpage Topband */
+.topband { background: var(--navy); color: #fff; padding: 28px 20px 24px; margin-bottom: 28px; }
+.topband-inner { max-width: 760px; margin: 0 auto; }
+h1 { font-family: "Space Grotesk", "Inter", sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.01em; margin: 0 0 6px; color: #fff; }
+.subtitle { color: #B7C0D1; margin: 0; font-size: 14px; }
+
+/* Cards & Forms */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px 24px; margin-bottom: 20px; }
+.card h3 { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.01em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; padding-bottom: 10px; border-bottom: 2px solid var(--text); }
+.card .card-note { font-size: 13px; color: var(--slate); margin: 10px 0 14px; }
+label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--slate); margin: 14px 0 5px; }
+input, select { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 4px; font-size: 14px; font-family: "Inter", sans-serif; background: var(--panel); color: var(--text); }
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+/* Table */
+table.board { width: 100%; border-collapse: collapse; margin-top: 4px; }
+table.board thead th { text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); padding: 8px 6px; border-bottom: 1px solid var(--text); }
+table.board tbody td { padding: 12px 6px; border-bottom: 1px solid var(--line); font-size: 14px; }
+table.board tbody tr:last-child td { border-bottom: none; }
+.route-badge { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; color: var(--accent); background: var(--signal-dim); border: 1px solid var(--signal); border-radius: 4px; padding: 3px 8px; display: inline-block; }
+.board-time { font-family: "IBM Plex Mono", monospace; font-size: 14px; }
+.board-count { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; color: var(--text); }
+.board-count.zero { color: #B7B3A6; font-weight: 400; }
+
+.day-row { display: grid; grid-template-columns: 96px 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.day-row label { margin: 0; font-weight: 600; font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--text); font-family: "Space Grotesk", sans-serif; }
+.skip-label { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--slate); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.03em; }
+.skip-label input { width: auto; }
+.time-picker { display: flex; align-items: center; gap: 3px; font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+.time-picker select { width: auto; padding: 7px 5px; font-size: 13px; font-family: "IBM Plex Mono", monospace; }
+.time-picker .ap { margin-left: 4px; }
+
+button { background: var(--ink); color: #fff; border: none; padding: 11px 22px; border-radius: 4px; font-family: "Space Grotesk", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; cursor: pointer; margin-top: 18px; }
+button:hover { background: var(--navy); }
+
+/* Day Tabs */
+.tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; border-bottom: 2px solid var(--text); padding-bottom: 0; }
+.tab { padding: 8px 16px; border: 1px solid var(--line); border-bottom: none; border-radius: 4px 4px 0 0; background: var(--paper); cursor: pointer; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.03em; color: var(--slate); position: relative; top: 2px; }
+.tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filter-row { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+.filter-row label { margin: 0; }
+.filter-row select { width: auto; min-width: 180px; }
+#status { margin-top: 12px; font-size: 13px; font-family: "IBM Plex Mono", monospace; }
+#status.ok { color: var(--ok); }
+#status.err { color: var(--alert); }
+.unmatched { font-size: 12px; font-family: "IBM Plex Mono", monospace; color: var(--alert); margin-top: 4px; padding: 10px 14px; background: #FBEAE7; border: 1px solid var(--alert); border-radius: 4px; }
+
+/* Hero Styles */
+.hero-body-wrap { margin: 0; background: var(--paper); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes busMove { 0% { transform: translateX(0); } 100% { transform: translateX(420px); } }
+@keyframes stopPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@keyframes tickerScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.hero-nav { background: var(--paper); padding: 20px 32px; position: relative; border-bottom: 1px solid var(--line); }
+.hero-nav-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.hero-logo { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; color: var(--text); }
+.hero-logo span { color: var(--signal); }
+
+.hero { position: relative; background: radial-gradient(ellipse 85% 65% at 82% 8%, var(--signal-dim) 0%, transparent 58%), var(--paper); color: var(--text); padding: 40px 32px 0; overflow: hidden; min-height: 580px; }
+.hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: radial-gradient(var(--line) 1.5px, transparent 1.5px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 70% 60% at 78% 35%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 70% 60% at 78% 35%, #000 0%, transparent 72%); }
+.hero-blob { position: absolute; border-radius: 50%; filter: blur(70px); z-index: 0; pointer-events: none; }
+.hero-blob-a { background: var(--signal); opacity: var(--blob-opacity-a); width: 320px; height: 320px; top: -90px; right: 40px; }
+.hero-blob-b { background: var(--signal); opacity: var(--blob-opacity-b); width: 240px; height: 240px; bottom: -40px; left: 6%; }
+
+.hero-rail { position: absolute; top: 100px; bottom: 120px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; width: 24px; }
+.hero-rail-left { left: 34px; }
+.hero-rail-left span { width: 1px; height: 100%; background: var(--slate); flex: 1; opacity: 0.35; }
+.hero-rail-right { right: 34px; gap: 20px; }
+.hero-rail-right a { color: var(--slate); font-size: 16px; text-decoration: none; }
+.hero-rail-right a:hover { color: var(--signal); }
+
+.hero-content { max-width: 1180px; margin: 0 auto; padding-left: 64px; padding-right: 64px; position: relative; z-index: 2; }
+.hero-count { font-family: "IBM Plex Mono", monospace; font-size: 14px; color: var(--signal); letter-spacing: 0.08em; margin: 0 0 18px; animation: fadeUp 0.6s ease-out both; }
+.hero-count span { color: var(--slate); }
+
+.hero-title {
+  font-family: "Space Grotesk", sans-serif; font-weight: 800; font-size: clamp(40px, 6vw, 68px); line-height: 1.02;
+  letter-spacing: -0.01em; margin: 0 0 20px; max-width: 620px; color: var(--title-color); -webkit-text-stroke: var(--title-stroke);
+  paint-order: stroke fill; animation: fadeUp 0.6s ease-out 0.1s both; position: relative; z-index: 1;
+}
+.accent-word { position: relative; display: inline-block; }
+.accent-word .squiggle { position: absolute; left: -8%; top: -22%; width: 118%; height: 150%; z-index: -1; pointer-events: none; overflow: visible; }
+.accent-word .squiggle path { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round; }
+
+.hero-copy { font-size: 15px; color: var(--slate); max-width: 480px; line-height: 1.6; margin: 0 0 28px; animation: fadeUp 0.6s ease-out 0.2s both; }
+.hero-ctas { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; animation: fadeUp 0.6s ease-out 0.3s both; }
+
+/* Primary Button with Theme-Adaptive Hover */
+.btn-solid {
+  background: var(--signal);
+  color: var(--btn-solid-color);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 14px 28px;
+  box-shadow: var(--btn-solid-shadow);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  display: inline-block;
+  cursor: pointer;
+}
+.btn-solid:hover {
+  background: var(--btn-solid-hover) !important;
+  color: var(--btn-solid-color) !important;
+  box-shadow: var(--btn-solid-hover-shadow);
+  transform: translateY(-2px);
+}
+
+.btn-ghost { color: var(--text); font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 12px 22px 12px 24px; background: var(--panel); display: inline-flex; align-items: center; gap: 6px; transition: border-color 0.15s, gap 0.15s; cursor: pointer; }
+.btn-ghost:hover { border-color: var(--signal); gap: 10px; }
+
+.hero-stats { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; position: relative; z-index: 1; }
+.stat-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px 7px 10px; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.02em; color: var(--text); box-shadow: var(--pill-shadow); }
+.stat-pill .stat-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--signal); }
+
+.hero-dots { display: flex; gap: 8px; margin-top: 36px; margin-bottom: 24px; }
+.hero-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--slate); opacity: 0.4; }
+.hero-dots .dot.active { background: var(--signal); opacity: 1; }
+
+.hero-visual { position: absolute; right: 90px; top: 90px; width: 380px; height: 380px; z-index: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--hero-visual-shadow); opacity: 1; }
+.hero-visual .route-svg { padding: 12px; box-sizing: border-box; }
+
+.float-card { position: absolute; z-index: 2; display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; font-family: "Space Grotesk", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: var(--text); box-shadow: var(--float-shadow); white-space: nowrap; }
+.float-card .fc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 4px var(--signal-dim); flex: none; }
+.float-card-1 { top: 68px; left: -26px; }
+.float-card-2 { bottom: 56px; right: -22px; }
+
+@media (max-width: 900px) { .float-card { display: none !important; } }
+
+.route-svg { width: 100%; height: 100%; }
+.route-line { stroke: var(--line-dark); stroke-width: 2; }
+.route-stop { fill: var(--signal); animation: stopPulse 1.6s ease-in-out infinite; }
+.route-bus { animation: busMove 4s linear infinite; }
+.bus-body { fill: var(--signal); }
+.bus-window { fill: var(--ink); opacity: 0.85; }
+.bus-wheel { fill: var(--ink); }
+
+.hero-bottom-word {
+  font-family: "Space Grotesk", sans-serif; font-weight: 800; font-size: clamp(64px, 13vw, 160px); color: var(--boarding-color);
+  -webkit-text-stroke: var(--boarding-stroke); paint-order: stroke fill; text-align: left; line-height: 0.85; padding: 0 0 12px 0;
+  letter-spacing: -0.02em; animation: fadeUp 0.7s ease-out 0.4s both; user-select: none;
+}
+
+.ticker-band { background: var(--signal); overflow: hidden; padding: 14px 0; border-top: 1px solid var(--line); }
+.ticker-track { display: flex; width: max-content; animation: tickerScroll 22s linear infinite; }
+.ticker-track span { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; color: var(--btn-solid-color); white-space: nowrap; padding: 0 28px; text-transform: uppercase; }
+
+.site-footer { margin-top: auto; padding: 24px 20px; border-top: 1px solid var(--line); background: var(--paper); display: flex; align-items: center; justify-content: center; }
+.footer-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.footer-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 3px var(--signal-dim); }
+.footer-text { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); }
+.footer-text strong { color: var(--text); font-weight: 700; letter-spacing: 0.05em; }
+
+@media (max-width: 760px) {
+  .hero-rail { display: none; }
+  .hero-visual { display: none; }
+  .hero-content { padding-left: 24px; padding-right: 24px; }
+  .hero-bottom-word { padding-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-switch">
+  <button class="active" data-page="home">Home</button>
+  <button data-page="routine">Submit routine</button>
+  <button data-page="dashboard">Dashboard</button>
+  <div class="theme-toggle">
+    <span class="tt-label" id="ttLabel"><span class="tt-icon">☀</span><span>Light</span></span>
+    <button class="theme-switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Toggle light/dark theme">
+      <span class="knob"></span>
+    </button>
+  </div>
+</div>
+
+<div class="page active" id="page-home">
+  <div class="hero-body-wrap">
+    <header class="hero-nav">
+      <div class="hero-nav-inner">
+        <div class="hero-logo">TRANSPORT<span>DESK</span></div>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="hero-blob hero-blob-a" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-b" aria-hidden="true"></div>
+      <div class="hero-rail hero-rail-left"><span></span><span></span><span></span></div>
+      <div class="hero-content">
+        <p class="hero-count">01<span>/02</span></p>
+        <h1 class="hero-title">A <span class="accent-word">SMARTER<svg class="squiggle" viewBox="0 0 200 90" preserveAspectRatio="none"><path d="M8,45 C8,15 45,6 100,6 C160,6 192,18 192,45 C192,74 155,84 100,84 C42,84 8,72 8,45 Z"/></svg></span><br/>WAY TO<br/>RIDE.</h1>
+        <p class="hero-copy">No more guessing which bus to run. Transport Desk turns messy class routines into a live, real-time passenger demand board.</p>
+        <div class="hero-ctas">
+          <a class="btn-solid" data-goto="routine">Submit routine</a>
+          <a class="btn-ghost" data-goto="dashboard">View live board <span class="arrow">&rarr;</span></a>
+        </div>
+        <div class="hero-stats">
+          <span class="stat-pill"><span class="stat-dot"></span>Sat–Thu only</span>
+        </div>
+        <div class="hero-dots"><span class="dot active"></span><span class="dot"></span></div>
+        <div class="hero-bottom-word">BOARDING!</div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="float-card float-card-1"><span class="fc-dot"></span>Tongi</div>
+        <div class="float-card float-card-2"><span class="fc-dot"></span>DSC</div>
+        <svg viewBox="0 0 420 420" class="route-svg">
+          <line x1="30" y1="210" x2="390" y2="210" class="route-line" />
+          <circle cx="60" cy="210" r="7" class="route-stop" style="animation-delay:0s"/>
+          <circle cx="160" cy="210" r="7" class="route-stop" style="animation-delay:.4s"/>
+          <circle cx="260" cy="210" r="7" class="route-stop" style="animation-delay:.8s"/>
+          <circle cx="360" cy="210" r="7" class="route-stop" style="animation-delay:1.2s"/>
+          <g class="route-bus">
+            <rect x="-28" y="188" width="56" height="30" rx="6" class="bus-body"/>
+            <rect x="-22" y="194" width="16" height="12" rx="2" class="bus-window"/>
+            <rect x="-2" y="194" width="16" height="12" rx="2" class="bus-window"/>
+            <circle cx="-16" cy="220" r="6" class="bus-wheel"/>
+            <circle cx="10" cy="220" r="6" class="bus-wheel"/>
+          </g>
+        </svg>
+      </div>
+      <div class="hero-rail hero-rail-right">
+        <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+        <a href="#" aria-label="Twitter"><i class="ti ti-brand-twitter"></i></a>
+        <a href="#" aria-label="Mail"><i class="ti ti-mail"></i></a>
+      </div>
+    </section>
+    <section class="ticker-band"><div class="ticker-track" id="tickerTrack"></div></section>
+  </div>
+</div>
+
+<div class="page" id="page-routine">
+  <div class="topband">
+    <div class="topband-inner">
+      <h1>Submit your class routine</h1>
+      <p class="subtitle">This is how we know which bus you actually need — no Friday, Sat&ndash;Thu only.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h3>Student</h3>
+      <label>Student ID</label>
+      <input id="studentId" placeholder="e.g. 242-15-776" />
+      <label>Full name</label>
+      <input id="name" placeholder="Your name" />
+      <label>Semester system</label>
+      <select id="semesterSystem"><option value="bi">Bi-semester</option><option value="tri">Tri-semester</option></select>
+    </div>
+    <div class="card">
+      <h3>Weekly routine</h3>
+      <p class="card-note">Enter your first class start time and last class end time for each day. Check "No class" for a day off.</p>
+      <div id="dayRows"></div>
+      <button id="submitBtn">Save routine</button>
+      <div id="status"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-dashboard">
+  <div class="topband">
+    <div class="topband-inner">
+      <h1>Bus demand board</h1>
+      <p class="subtitle">Real student counts per bus, pulled from submitted routines.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="tabs" id="dayTabs"></div>
+    <div class="filter-row">
+      <label style="margin:0">Semester system</label>
+      <select id="filterSelect">
+        <option value="both">Both (Bi + Tri)</option>
+        <option value="bi">Bi only</option>
+        <option value="tri">Tri only</option>
+      </select>
+    </div>
+    <div class="card">
+      <h3>Going — to campus</h3>
+      <table class="board" id="goingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h3>Coming — from campus</h3>
+      <table class="board" id="comingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="unmatchedBox" class="unmatched" style="display:none"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-badge">
+    <span class="footer-dot"></span>
+    <span class="footer-text">Built by <strong>SMR776</strong></span>
+  </div>
+</footer>
+
+<script>
+/* Router & Switcher */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.preview-switch button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  if (name === 'dashboard') loadLiveDemand();
+}
+document.querySelectorAll('.preview-switch > button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.goto)));
+
+/* Theme Switcher */
+const themeSwitch = document.getElementById('themeSwitch');
+const ttLabel = document.getElementById('ttLabel');
+themeSwitch.addEventListener('click', () => {
+  const goingDark = themeSwitch.getAttribute('aria-checked') !== 'true';
+  themeSwitch.setAttribute('aria-checked', String(goingDark));
+  document.documentElement.setAttribute('data-theme', goingDark ? 'dark' : 'light');
+  ttLabel.innerHTML = goingDark 
+    ? '<span class="tt-icon">☾</span><span>Dark</span>' 
+    : '<span class="tt-icon">☀</span><span>Light</span>';
+});
+
+/* Marquee Stream */
+const GOING = ["7:00 AM", "8:30 AM", "10:00 AM", "12:00 PM"];
+const COMING = ["11:30 AM", "1:30 PM", "3:00 PM", "4:20 PM", "6:10 PM"];
+const tickerItems = [...GOING.map(t => `Going ${t}`), ...COMING.map(t => `Coming ${t}`)];
+const track = document.getElementById("tickerTrack");
+const fullList = [...tickerItems, ...tickerItems];
+track.innerHTML = fullList.map(item => `<span>${item}</span>`).join("");
+
+/* Intake Form Setup */
+const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+const dayRowsEl = document.getElementById("dayRows");
+function hourOptions() { return Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h}">${h}</option>`).join(""); }
+function minuteOptions() { return ["00", "15", "30", "45"].map((m) => `<option value="${m}">${m}</option>`).join(""); }
+function ampmOptions() { return `<option value="AM">AM</option><option value="PM">PM</option>`; }
+function to24Hour(hour12, minute, period) { let h = parseInt(hour12, 10) % 12; if (period === "PM") h += 12; return `${String(h).padStart(2, "0")}:${minute}`; }
+
+for (const day of DAYS) {
+  const row = document.createElement("div");
+  row.className = "day-row";
+  row.innerHTML = `
+    <label>${day}</label>
+    <div class="time-picker" id="first-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
+    <div class="time-picker" id="last-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
+    <label class="skip-label"><input type="checkbox" id="skip-${day}" /> No class</label>`;
+  dayRowsEl.appendChild(row);
+}
+function readTimePicker(id) {
+  const el = document.getElementById(id);
+  return to24Hour(el.querySelector(".hh").value, el.querySelector(".mm").value, el.querySelector(".ap").value);
+}
+for (const day of DAYS) {
+  const skip = document.getElementById(`skip-${day}`);
+  const first = document.getElementById(`first-${day}`);
+  const last = document.getElementById(`last-${day}`);
+  skip.addEventListener("change", () => {
+    first.querySelectorAll("select").forEach((s) => (s.disabled = skip.checked));
+    last.querySelectorAll("select").forEach((s) => (s.disabled = skip.checked));
+  });
+}
+
+/* API: Submit Routine to Real Backend */
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const statusEl = document.getElementById("status");
+  const studentId = document.getElementById("studentId").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const semesterSystem = document.getElementById("semesterSystem").value;
+
+  if (!studentId || !name) {
+    statusEl.textContent = "Please fill in your Student ID and Name.";
+    statusEl.className = "err";
+    return;
+  }
+
+  const routine = {};
+  for (const day of DAYS) {
+    if (document.getElementById(`skip-${day}`).checked) {
+      routine[day] = null;
+      continue;
+    }
+    routine[day] = {
+      first: readTimePicker(`first-${day}`),
+      last: readTimePicker(`last-${day}`)
+    };
+  }
+
+  statusEl.textContent = "Saving routine to server...";
+  statusEl.className = "";
+
+  try {
+    const res = await fetch("/api/routine", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId, name, semesterSystem, routine })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Submission failed");
+    statusEl.textContent = "Saved! Your routine has been recorded.";
+    statusEl.className = "ok";
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.className = "err";
+  }
+});
+
+/* Dashboard Setup & Fetch API */
+let selectedDay = "Saturday";
+const dayTabsEl = document.getElementById("dayTabs");
+const filterSelect = document.getElementById("filterSelect");
+
+for (const day of DAYS) {
+  const tab = document.createElement("div");
+  tab.className = "tab" + (day === selectedDay ? " active" : "");
+  tab.textContent = day;
+  tab.addEventListener("click", () => {
+    selectedDay = day;
+    document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    loadLiveDemand();
+  });
+  dayTabsEl.appendChild(tab);
+}
+filterSelect.addEventListener("change", loadLiveDemand);
+
+function renderTable(tableId, rows, prefix) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = "";
+  rows.forEach((row, i) => {
+    const tr = document.createElement("tr");
+    const countClass = row.count === 0 ? "board-count zero" : "board-count";
+    tr.innerHTML = `<td><span class="route-badge">${prefix}${i + 1}</span></td><td class="board-time">${row.display}</td><td class="${countClass}">${row.count}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadLiveDemand() {
+  const filter = filterSelect.value;
+  try {
+    const res = await fetch(`/api/demand?day=${encodeURIComponent(selectedDay)}&filter=${encodeURIComponent(filter)}`);
+    const data = await res.json();
+    renderTable("goingTable", data.going, "G");
+    renderTable("comingTable", data.coming, "C");
+
+    const unmatchedBox = document.getElementById("unmatchedBox");
+    if (data.unmatchedCount > 0) {
+      unmatchedBox.style.display = "block";
+      unmatchedBox.textContent = `${data.unmatchedCount} student schedule requirement(s) fall outside all scheduled bus hours.`;
+    } else {
+      unmatchedBox.style.display = "none";
+    }
+  } catch (err) {
+    console.error("Failed to fetch live demand:", err);
+  }
+}
+</script>
+</body>
+</html>
