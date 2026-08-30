@@ -272,7 +272,6 @@ button:hover { background: var(--navy); }
 <style>
 /* Responsive Mobile Table Scroll & Layout Fix */
 @media (max-width: 768px) {
-  /* Prevent page blowout and enable card scrolling */
   #routineForm,
   .routine-section,
   .card,
@@ -281,7 +280,6 @@ button:hover { background: var(--navy); }
     overflow-x: hidden !important;
   }
 
-  /* Wrap the table inside a horizontal scroll container */
   table {
     display: block !important;
     width: 100% !important;
@@ -290,7 +288,6 @@ button:hover { background: var(--navy); }
     white-space: nowrap !important;
   }
 
-  /* Keep Day column visible on the left */
   table td:first-child,
   table th:first-child {
     position: sticky !important;
@@ -301,14 +298,12 @@ button:hover { background: var(--navy); }
     font-weight: 700 !important;
   }
 
-  /* Compact dropdown sizing on phones */
   select {
     padding: 6px 4px !important;
     font-size: 13px !important;
     min-width: 48px !important;
   }
 
-  /* Reduce spacing between time inputs */
   td {
     padding: 8px 4px !important;
   }
@@ -329,7 +324,6 @@ html, body {
 }
 
 @media (max-width: 768px) {
-  /* Center main content container */
   main,
   .container,
   #dashboardView,
@@ -343,7 +337,6 @@ html, body {
     box-sizing: border-box !important;
   }
 
-  /* Make white cards stretch symmetrically */
   .card,
   .dashboard-card,
   .routine-card,
@@ -355,7 +348,6 @@ html, body {
     box-sizing: border-box !important;
   }
 
-  /* Full-width tables inside cards */
   table {
     width: 100% !important;
   }
@@ -364,7 +356,6 @@ html, body {
 <style>
 /* Perfect Mobile Fit for Weekly Routine Table */
 @media (max-width: 768px) {
-  /* Ensure parent container stretches full width with no overflow */
   #routineForm,
   .routine-section,
   .card {
@@ -379,13 +370,11 @@ html, body {
     border-spacing: 0 !important;
   }
 
-  /* Compact table cells */
   table td, table th {
     padding: 6px 2px !important;
     font-size: 11px !important;
   }
 
-  /* Day label column */
   table td:first-child {
     font-size: 11px !important;
     font-weight: 700 !important;
@@ -393,7 +382,6 @@ html, body {
     padding-left: 2px !important;
   }
 
-  /* Compact time dropdowns */
   select {
     padding: 4px 1px !important;
     font-size: 11px !important;
@@ -402,7 +390,6 @@ html, body {
     border-radius: 4px !important;
   }
 
-  /* Checkbox and label fitting */
   input[type="checkbox"] {
     transform: scale(0.85) !important;
     margin: 0 2px 0 0 !important;
@@ -418,7 +405,6 @@ html, body {
 <style>
 /* Modern Mobile UX/UI for Weekly Routine */
 @media (max-width: 650px) {
-  /* Reset table container to full width card */
   #routineForm table,
   .routine-table,
   table {
@@ -430,7 +416,7 @@ html, body {
   }
 
   table thead {
-    display: none !important; /* Hide cramped headers */
+    display: none !important;
   }
 
   table tbody {
@@ -440,7 +426,6 @@ html, body {
     width: 100% !important;
   }
 
-  /* Each Day row becomes an individual sleek card */
   table tbody tr {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -460,7 +445,6 @@ html, body {
     border-color: #27272a !important;
   }
 
-  /* Day Name Title */
   table tbody tr td:first-child {
     font-size: 15px !important;
     font-weight: 700 !important;
@@ -475,7 +459,6 @@ html, body {
     color: #facc15 !important;
   }
 
-  /* No Class Checkbox aligned to top-right of the card */
   table tbody tr td:last-child {
     display: flex !important;
     align-items: center !important;
@@ -487,7 +470,6 @@ html, body {
     color: #64748b !important;
   }
 
-  /* Time inputs grouping (Start & End) */
   table tbody tr td:not(:first-child):not(:last-child) {
     display: inline-flex !important;
     align-items: center !important;
@@ -497,7 +479,6 @@ html, body {
     border: none !important;
   }
 
-  /* Larger touch-friendly dropdown buttons */
   select {
     height: 38px !important;
     padding: 4px 8px !important;
@@ -516,7 +497,6 @@ html, body {
     color:#facc15 !important;
   }
 
-  /* Full-width submit button */
   #routineForm button,
   button[type="submit"] {
     width: 100% !important;
@@ -547,19 +527,17 @@ html, body {
 <style>
 /* Modern Mobile Day Cards */
 @media (max-width: 768px) {
-  /* Day container card */
   .routine-row, .day-row, tr, [class*="day-"] {
     display: flex !important;
     flex-direction: column !important;
     background: inherit !important;
-    border: 1.5px solid #facc15!important;
+    border: 1.5px solid #3e3e3c!important;
     border-radius: 12px !important;
     padding: 14px 16px !important;
     margin-bottom: 14px !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
   }
 
-  /* Day Name Header */
   .day-name, h4, h5, .routine-row strong, .day-label {
     font-size: 15px !important;
     font-weight: 700 !important;
@@ -569,7 +547,6 @@ html, body {
     letter-spacing: 0.5px;
   }
 
-  /* Dropdown Selects & Inputs */
   select {
     background-color: #f8fafc !important;
     border: 1px solid #cbd5e1 !important;
@@ -580,7 +557,6 @@ html, body {
     min-width: 58px !important;
   }
 
-  /* Checkbox / No Class row */
   input[type="checkbox"] {
     width: 18px !important;
     height: 18px !important;
@@ -596,8 +572,8 @@ html, body {
 }
 </style>
 
-
-<style>body.dark #routineForm tr, [data-theme='dark'] #routineForm tr, body.dark .card, [data-theme='dark'] .card { border:none !important; }</style></head>
+<style>body.dark #routineForm tr, [data-theme='dark'] #routineForm tr, body.dark .card, [data-theme='dark'] .card { border:none !important; }</style>
+</head>
 <body>
 
 <div class="preview-switch">
@@ -762,25 +738,49 @@ track.innerHTML = fullList.map(item => `<span>${item}</span>`).join("");
 /* Intake Form Setup */
 const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
 const dayRowsEl = document.getElementById("dayRows");
-function hourOptions() { return Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h}">${h}</option>`).join(""); }
-function minuteOptions() { return ["00", "15", "30", "45"].map((m) => `<option value="${m}">${m}</option>`).join(""); }
-function ampmOptions() { return `<option value="AM">AM</option><option value="PM">PM</option>`; }
-function to24Hour(hour12, minute, period) { let h = parseInt(hour12, 10) % 12; if (period === "PM") h += 12; return `${String(h).padStart(2, "0")}:${minute}`; }
+
+function hourOptions(selected = 1) { 
+  return Array.from({ length: 12 }, (_, i) => i + 1)
+    .map(h => `<option value="${h}" ${Number(selected) === h ? 'selected' : ''}>${h}</option>`)
+    .join(""); 
+}
+
+function minuteOptions(selected = "00") { 
+  return ["00", "15", "30", "45"]
+    .map(m => `<option value="${m}" ${String(selected) === m ? 'selected' : ''}>${m}</option>`)
+    .join(""); 
+}
+
+function ampmOptions(selected = "AM") { 
+  return `<option value="AM" ${selected === 'AM' ? 'selected' : ''}>AM</option><option value="PM" ${selected === 'PM' ? 'selected' : ''}>PM</option>`; 
+}
+
+function to24Hour(hour12, minute, period) { 
+  let h = parseInt(hour12, 10) % 12; 
+  if (period === "PM") h += 12; 
+  return `${String(h).padStart(2, "0")}:${minute}`; 
+}
 
 for (const day of DAYS) {
   const row = document.createElement("div");
   row.className = "day-row";
   row.innerHTML = `
     <label>${day}</label>
-    <div class="time-picker" id="first-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
-    <div class="time-picker" id="last-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
+    <div class="time-picker" id="first-${day}">
+      <select class="hh">${hourOptions(8)}</select>:<select class="mm">${minuteOptions("30")}</select><select class="ap">${ampmOptions("AM")}</select>
+    </div>
+    <div class="time-picker" id="last-${day}">
+      <select class="hh">${hourOptions(5)}</select>:<select class="mm">${minuteOptions("30")}</select><select class="ap">${ampmOptions("PM")}</select>
+    </div>
     <label class="skip-label"><input type="checkbox" id="skip-${day}" /> No class</label>`;
   dayRowsEl.appendChild(row);
 }
+
 function readTimePicker(id) {
   const el = document.getElementById(id);
   return to24Hour(el.querySelector(".hh").value, el.querySelector(".mm").value, el.querySelector(".ap").value);
 }
+
 for (const day of DAYS) {
   const skip = document.getElementById(`skip-${day}`);
   const first = document.getElementById(`first-${day}`);
@@ -886,8 +886,6 @@ async function loadLiveDemand() {
 }
 </script>
 
-
-
 <style id="theme-border-fix">
 /* 1. Remove Yellow Outline from Page / Outer Sections */
 html, body, main, #mainContainer, .container, #dashboardView, #routineView, section.card {
@@ -915,17 +913,3 @@ body.dark tr,
 </style>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
