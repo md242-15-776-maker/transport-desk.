@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Transport Desk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
 <style>
 /* LIGHT Theme — Bright Green Hover */
 :root, [data-theme="light"] {
@@ -269,325 +269,56 @@ button:hover { background: var(--navy); }
   .hero-bottom-word { padding-left: 0; }
 }
 </style>
-<style>
-@media (max-width: 768px) {
-  *, *::before, *::after { box-sizing: border-box !important; }
-  body { overflow-x: hidden !important; width: 100vw !important; padding: 0 !important; margin: 0 !important; }
-  nav, header, .navbar { display: flex !important; flex-wrap: wrap !important; justify-content: space-between !important; padding: 10px 14px !important; gap: 8px !important; }
-  nav button, nav a, .nav-item { font-size: 11px !important; padding: 6px 8px !important; }
-  .day-row, .routine-row, tr { display: flex !important; flex-direction: column !important; padding: 10px !important; margin-bottom: 10px !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 8px !important; width: 100% !important; }
-  .day-row > *, .routine-row > * { width: 100% !important; margin-bottom: 6px !important; }
-  select, input[type="text"], input[type="number"] { font-size: 13px !important; padding: 6px !important; height: auto !important; }
-  .day-tabs, .tabs { display: flex !important; overflow-x: auto !important; white-space: nowrap !important; gap: 6px !important; padding-bottom: 8px !important; }
-  .day-tabs button, .tab-btn { flex: 0 0 auto !important; padding: 8px 12px !important; font-size: 12px !important; }
-  table, thead, tbody, th, td { display: block !important; width: 100% !important; }
-  h1 { font-size: 2rem !important; }
-}
-</style>
-<style>
-/* Modern Mobile Day Cards */
-@media (max-width: 768px) {
-  /* Day container card */
-  .routine-row, .day-row, tr, [class*="day-"] {
-    display: flex !important;
-    flex-direction: column !important;
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 14px 16px !important;
-    margin-bottom: 14px !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-  }
-
-  /* Day Name Header */
-  .day-name, h4, h5, .routine-row strong, .day-label {
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    color: #1e293b !important;
-    margin-bottom: 10px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* Dropdown Selects & Inputs */
-  select {
-    background-color: #f8fafc !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 8px !important;
-    padding: 8px 10px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    min-width: 58px !important;
-  }
-
-  /* Checkbox / No Class row */
-  input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    accent-color: #15803d !important;
-    cursor: pointer !important;
-  }
-
-  label {
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #475569 !important;
-  }
-}
-</style>
-<style>
-/* Light Mode Day Badge */
-td:first-child, 
-.day-label, 
-.day-name {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 6px 14px !important;
-  background-color: #edf2f7 !important;
-  color: #1b4332 !important;
-  border: 1.5px solid #cbd5e0 !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  min-width: 95px !important;
-  text-align: center !important;
-}
-
-/* Dark Mode Day Badge (Matches dark & yellow accents) */
-body.dark td:first-child,
-body.dark .day-label,
-body.dark .day-name,
-[data-theme="dark"] td:first-child,
-[data-theme="dark"] .day-label,
-[data-theme="dark"] .day-name,
-.dark-theme td:first-child {
-  background-color: #1c1c1e !important;
-  color: #ffd60a !important;
-  border: 1.5px solid #3a3a3c !important;
-  box-shadow: 0 0 0 1px rgba(255, 214, 10, 0.15) !important;
-}
-</style>
-
-<style>
-/* Modern Mobile Day Cards */
-@media (max-width: 768px) {
-  /* Day container card */
-  .routine-row, .day-row, tr, [class*="day-"] {
-    display: flex !important;
-    flex-direction: column !important;
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 14px 16px !important;
-    margin-bottom: 14px !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-  }
-
-  /* Day Name Header */
-  .day-name, h4, h5, .routine-row strong, .day-label {
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    color: #1e293b !important;
-    margin-bottom: 10px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* Dropdown Selects & Inputs */
-  select {
-    background-color: #f8fafc !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 8px !important;
-    padding: 8px 10px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    min-width: 58px !important;
-  }
-
-  /* Checkbox / No Class row */
-  input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    accent-color: #15803d !important;
-    cursor: pointer !important;
-  }
-
-  label {
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #475569 !important;
-  }
-}
-</style>
-<style>
-/* Remove outer box / flex wrapper around route badges */
-td:first-child,
-.route-cell,
-table tbody tr td:first-child {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  display: table-cell !important;
-  padding: 10px 12px !important;
-  width: auto !important;
-}
-
-/* Keep only the small inner badge styled */
-.route-badge,
-td:first-child > span,
-td:first-child > div {
-  display: inline-flex !important;
-  width: auto !important;
-}
-</style>
-<style>
-/* Align Table Columns & Fix Route Header Position */
-table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  table-layout: fixed !important;
-}
-
-/* Route Column (Left) */
-th:nth-child(1),
-td:nth-child(1) {
-  width: 120px !important;
-  text-align: left !important;
-  padding-left: 12px !important;
-  padding-right: 8px !important;
-}
-
-/* Route Badges Container */
-td:nth-child(1) span,
-td:nth-child(1) div,
-.route-badge {
-  display: inline-flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  margin: 0 !important;
-}
-
-/* Departs Column (Center/Left) */
-th:nth-child(2),
-td:nth-child(2) {
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-
-/* Students Column (Right) */
-th:nth-child(3),
-td:nth-child(3) {
-  width: 100px !important;
-  text-align: right !important;
-  padding-right: 16px !important;
-}
-</style>
-<rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232d6a4f%22/><text y=%2270%22 x=%2250%22 font-size=%2260%22 text-anchor=%22middle%22>🚌</text></svg>
-<style>
-/* Border box around weekday names */
-#routineForm tr td:first-child,
-table.routine-table td:first-child,
-.routine-table tr td:first-child {
-  padding: 8px 6px !important;
-}
-
-#routineForm tr td:first-child,
-#routineForm td:first-child {
-  display: table-cell !important;
-}
-
-/* Day text wrapper with border */
-#routineForm tr td:first-child,
-.routine-section td:first-child {
-  font-weight: 600 !important;
-  font-size: 13.5px !important;
-}
-
-/* Inner box styling */
-#routineForm tbody tr td:first-child {
-  border: none !important;
-}
-
-#routineForm td:first-child span,
-#routineForm td:first-child div,
-#routineForm tr td:first-child {
-  line-height: normal;
-}
-
-/* Light Theme Day Box */
-body:not(.dark):not([data-theme="dark"]) #routineForm tr td:first-child {
-  border: 1.5px solid #2d6a4f !important;
-  background-color: rgba(45, 106, 79, 0.05) !important;
-  color: #1b4332 !important;
-  border-radius: 8px !important;
-  text-align: center !important;
-  min-width: 95px !important;
-}
-
-/* Dark Theme Day Box */
-body.dark #routineForm tr td:first-child,
-[data-theme="dark"] #routineForm tr td:first-child {
-  border: 1.5px solid #eab308 !important;
-  background-color: rgba(234, 179, 8, 0.06) !important;
-  color: #facc15 !important;
-  border-radius: 8px !important;
-  text-align: center !important;
-  min-width: 95px !important;
-}
-</style>
-<rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230f281e%22/><path d=%22M15 48h42c4 0 7 3 7 7v15H15z%22 fill=%22%232d6a4f%22/><circle cx=%2226%22 cy=%2274%22 r=%226%22 fill=%22%23d8f3dc%22/><circle cx=%2254%22 cy=%2274%22 r=%226%22 fill=%22%23d8f3dc%22/><rect x=%2222%22 y=%2252%22 width=%2210%22 height=%228%22 rx=%222%22 fill=%22%23d8f3dc%22/><rect x=%2238%22 y=%2252%22 width=%2210%22 height=%228%22 rx=%222%22 fill=%22%23d8f3dc%22/><path d=%22M10 65 Q 35 60 55 42 T 82 18%22 fill=%22none%22 stroke=%22%2352b788%22 stroke-width=%228%22 stroke-linecap=%22round%22/><path d=%22M70 16 L86 16 L86 32 Z%22 fill=%22%2352b788%22/></svg>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230f281e'/%3E%3Cpath d='M15 48h42c4 0 7 3 7 7v15H15z' fill='%232d6a4f'/%3E%3Ccircle cx='26' cy='74' r='6' fill='%23d8f3dc'/%3E%3Ccircle cx='54' cy='74' r='6' fill='%23d8f3dc'/%3E%3Crect x='22' y='52' width='10' height='8' rx='2' fill='%23d8f3dc'/%3E%3Crect x='38' y='52' width='10' height='8' rx='2' fill='%23d8f3dc'/%3E%3Cpath d='M10 65 Q 35 60 55 42 T 82 18' fill='none' stroke='%2352b788' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M70 16 L86 16 L86 32 Z' fill='%2352b788'/%3E%3C/svg%3E
 </head>
 <body>
 
-<div class="preview-switch
-  <button class="active" data-page="homeHome</button>
-  <button data-page="routineSubmit routine</button>
-  <button data-page="dashboardDashboard</button>
-  <div class="theme-toggle
-    <span class="tt-label" id="ttLabel<span class="tt-icon☀</span><span>Light</span></span>
-    <button class="theme-switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Toggle light/dark theme
-      <span class="knob</span>
+<div class="preview-switch">
+  <button class="active" data-page="home">Home</button>
+  <button data-page="routine">Submit routine</button>
+  <button data-page="dashboard">Dashboard</button>
+  <div class="theme-toggle">
+    <span class="tt-label" id="ttLabel"><span class="tt-icon">☀</span><span>Light</span></span>
+    <button class="theme-switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Toggle light/dark theme">
+      <span class="knob"></span>
     </button>
   </div>
 </div>
 
-<div class="page active" id="page-home
-  <div class="hero-body-wrap
-    <header class="hero-nav
-      <div class="hero-nav-inner
-        <div class="hero-logoTRANSPORT<span>DESK</span></div>
+<div class="page active" id="page-home">
+  <div class="hero-body-wrap">
+    <header class="hero-nav">
+      <div class="hero-nav-inner">
+        <div class="hero-logo">TRANSPORT<span>DESK</span></div>
       </div>
     </header>
-    <section class="hero
-      <div class="hero-blob hero-blob-a" aria-hidden="true</div>
-      <div class="hero-blob hero-blob-b" aria-hidden="true</div>
-      <div class="hero-rail hero-rail-left<span></span><span></span><span></span></div>
-      <div class="hero-content
-        <p class="hero-count01<span>/02</span></p>
-        <h1 class="hero-titleA <span class="accent-wordSMARTER<svg class="squiggle" viewBox="0 0 200 90" preserveAspectRatio="none<path d="M8,45 C8,15 45,6 100,6 C160,6 192,18 192,45 C192,74 155,84 100,84 C42,84 8,72 8,45 Z"/></svg></span><br/>WAY TO<br/>RIDE.</h1>
-        <p class="hero-copyNo more guessing which bus to run. Transport Desk turns messy class routines into a live, real-time passenger demand board.</p>
-        <div class="hero-ctas
-          <a class="btn-solid" data-goto="routineSubmit routine</a>
-          <a class="btn-ghost" data-goto="dashboardView live board <span class="arrow&rarr;</span></a>
+    <section class="hero">
+      <div class="hero-blob hero-blob-a" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-b" aria-hidden="true"></div>
+      <div class="hero-rail hero-rail-left"><span></span><span></span><span></span></div>
+      <div class="hero-content">
+        <p class="hero-count">01<span>/02</span></p>
+        <h1 class="hero-title">A <span class="accent-word">SMARTER<svg class="squiggle" viewBox="0 0 200 90" preserveAspectRatio="none"><path d="M8,45 C8,15 45,6 100,6 C160,6 192,18 192,45 C192,74 155,84 100,84 C42,84 8,72 8,45 Z"/></svg></span><br/>WAY TO<br/>RIDE.</h1>
+        <p class="hero-copy">No more guessing which bus to run. Transport Desk turns messy class routines into a live, real-time passenger demand board.</p>
+        <div class="hero-ctas">
+          <a class="btn-solid" data-goto="routine">Submit routine</a>
+          <a class="btn-ghost" data-goto="dashboard">View live board <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="hero-stats
-          <span class="stat-pill<span class="stat-dot</span>Sat–Thu only</span>
+        <div class="hero-stats">
+          <span class="stat-pill"><span class="stat-dot"></span>Sat–Thu only</span>
         </div>
-        <div class="hero-dots<span class="dot active</span><span class="dot</span></div>
-        <div class="hero-bottom-wordBOARDING!</div>
+        <div class="hero-dots"><span class="dot active"></span><span class="dot"></span></div>
+        <div class="hero-bottom-word">BOARDING!</div>
       </div>
-      <div class="hero-visual" aria-hidden="true
-        <div class="float-card float-card-1<span class="fc-dot</span>Tongi</div>
-        <div class="float-card float-card-2<span class="fc-dot</span>DSC</div>
-        <svg viewBox="0 0 420 420" class="route-svg
+      <div class="hero-visual" aria-hidden="true">
+        <div class="float-card float-card-1"><span class="fc-dot"></span>Tongi</div>
+        <div class="float-card float-card-2"><span class="fc-dot"></span>DSC</div>
+        <svg viewBox="0 0 420 420" class="route-svg">
           <line x1="30" y1="210" x2="390" y2="210" class="route-line" />
           <circle cx="60" cy="210" r="7" class="route-stop" style="animation-delay:0s"/>
           <circle cx="160" cy="210" r="7" class="route-stop" style="animation-delay:.4s"/>
           <circle cx="260" cy="210" r="7" class="route-stop" style="animation-delay:.8s"/>
           <circle cx="360" cy="210" r="7" class="route-stop" style="animation-delay:1.2s"/>
-          <g class="route-bus
+          <g class="route-bus">
             <rect x="-28" y="188" width="56" height="30" rx="6" class="bus-body"/>
             <rect x="-22" y="194" width="16" height="12" rx="2" class="bus-window"/>
             <rect x="-2" y="194" width="16" height="12" rx="2" class="bus-window"/>
@@ -596,76 +327,76 @@ body.dark #routineForm tr td:first-child,
           </g>
         </svg>
       </div>
-      <div class="hero-rail hero-rail-right
-        <a href="#" aria-label="Facebook<i class="ti ti-brand-facebook</i></a>
-        <a href="#" aria-label="Twitter<i class="ti ti-brand-twitter</i></a>
-        <a href="#" aria-label="Mail<i class="ti ti-mail</i></a>
+      <div class="hero-rail hero-rail-right">
+        <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+        <a href="#" aria-label="Twitter"><i class="ti ti-brand-twitter"></i></a>
+        <a href="#" aria-label="Mail"><i class="ti ti-mail"></i></a>
       </div>
     </section>
-    <section class="ticker-band<div class="ticker-track" id="tickerTrack</div></section>
+    <section class="ticker-band"><div class="ticker-track" id="tickerTrack"></div></section>
   </div>
 </div>
 
-<div class="page" id="page-routine
-  <div class="topband
-    <div class="topband-inner
+<div class="page" id="page-routine">
+  <div class="topband">
+    <div class="topband-inner">
       <h1>Submit your class routine</h1>
-      <p class="subtitleThis is how we know which bus you actually need — no Friday, Sat&ndash;Thu only.</p>
+      <p class="subtitle">This is how we know which bus you actually need — no Friday, Sat&ndash;Thu only.</p>
     </div>
   </div>
-  <div class="container
-    <div class="card
+  <div class="container">
+    <div class="card">
       <h3>Student</h3>
       <label>Student ID</label>
       <input id="studentId" placeholder="e.g. 242-15-776" />
       <label>Full name</label>
       <input id="name" placeholder="Your name" />
       <label>Semester system</label>
-      <select id="semesterSystem<option value="biBi-semester</option><option value="triTri-semester</option></select>
+      <select id="semesterSystem"><option value="bi">Bi-semester</option><option value="tri">Tri-semester</option></select>
     </div>
-    <div class="card
+    <div class="card">
       <h3>Weekly routine</h3>
-      <p class="card-noteEnter your first class start time and last class end time for each day. Check "No class" for a day off.</p>
-      <div id="dayRows</div>
-      <button id="submitBtnSave routine</button>
-      <div id="status</div>
+      <p class="card-note">Enter your first class start time and last class end time for each day. Check "No class" for a day off.</p>
+      <div id="dayRows"></div>
+      <button id="submitBtn">Save routine</button>
+      <div id="status"></div>
     </div>
   </div>
 </div>
 
-<div class="page" id="page-dashboard
-  <div class="topband
-    <div class="topband-inner
+<div class="page" id="page-dashboard">
+  <div class="topband">
+    <div class="topband-inner">
       <h1>Bus demand board</h1>
-      <p class="subtitleReal student counts per bus, pulled from submitted routines.</p>
+      <p class="subtitle">Real student counts per bus, pulled from submitted routines.</p>
     </div>
   </div>
-  <div class="container
-    <div class="tabs" id="dayTabs</div>
-    <div class="filter-row
-      <label style="margin:0Semester system</label>
-      <select id="filterSelect
-        <option value="bothBoth (Bi + Tri)</option>
-        <option value="biBi only</option>
-        <option value="triTri only</option>
+  <div class="container">
+    <div class="tabs" id="dayTabs"></div>
+    <div class="filter-row">
+      <label style="margin:0">Semester system</label>
+      <select id="filterSelect">
+        <option value="both">Both (Bi + Tri)</option>
+        <option value="bi">Bi only</option>
+        <option value="tri">Tri only</option>
       </select>
     </div>
-    <div class="card
+    <div class="card">
       <h3>Going — to campus</h3>
-      <table class="board" id="goingTable<thead><tr><th>Route</th><th>Departs</th><th style="text-align:rightStudents</th></tr></thead><tbody></tbody></table>
+      <table class="board" id="goingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
     </div>
-    <div class="card
+    <div class="card">
       <h3>Coming — from campus</h3>
-      <table class="board" id="comingTable<thead><tr><th>Route</th><th>Departs</th><th style="text-align:rightStudents</th></tr></thead><tbody></tbody></table>
+      <table class="board" id="comingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
     </div>
-    <div id="unmatchedBox" class="unmatched" style="display:none</div>
+    <div id="unmatchedBox" class="unmatched" style="display:none"></div>
   </div>
 </div>
 
-<footer class="site-footer
-  <div class="footer-badge
-    <span class="footer-dot</span>
-    <span class="footer-textBuilt by <strong>SMR776</strong></span>
+<footer class="site-footer">
+  <div class="footer-badge">
+    <span class="footer-dot"></span>
+    <span class="footer-text">Built by <strong>SMR776</strong></span>
   </div>
 </footer>
 
@@ -688,8 +419,8 @@ themeSwitch.addEventListener('click', () => {
   themeSwitch.setAttribute('aria-checked', String(goingDark));
   document.documentElement.setAttribute('data-theme', goingDark ? 'dark' : 'light');
   ttLabel.innerHTML = goingDark 
-    ? '<span class="tt-icon☾</span><span>Dark</span>' 
-    : '<span class="tt-icon☀</span><span>Light</span>';
+    ? '<span class="tt-icon">☾</span><span>Dark</span>' 
+    : '<span class="tt-icon">☀</span><span>Light</span>';
 });
 
 /* Marquee Stream */
@@ -703,9 +434,9 @@ track.innerHTML = fullList.map(item => `<span>${item}</span>`).join("");
 /* Intake Form Setup */
 const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
 const dayRowsEl = document.getElementById("dayRows");
-function hourOptions() { return Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h}${h}</option>`).join(""); }
-function minuteOptions() { return ["00", "15", "30", "45"].map((m) => `<option value="${m}${m}</option>`).join(""); }
-function ampmOptions() { return `<option value="AMAM</option><option value="PMPM</option>`; }
+function hourOptions() { return Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h}">${h}</option>`).join(""); }
+function minuteOptions() { return ["00", "15", "30", "45"].map((m) => `<option value="${m}">${m}</option>`).join(""); }
+function ampmOptions() { return `<option value="AM">AM</option><option value="PM">PM</option>`; }
 function to24Hour(hour12, minute, period) { let h = parseInt(hour12, 10) % 12; if (period === "PM") h += 12; return `${String(h).padStart(2, "0")}:${minute}`; }
 
 for (const day of DAYS) {
@@ -713,9 +444,9 @@ for (const day of DAYS) {
   row.className = "day-row";
   row.innerHTML = `
     <label>${day}</label>
-    <div class="time-picker" id="first-${day}<select class="hh${hourOptions()}</select>:<select class="mm${minuteOptions()}</select><select class="ap${ampmOptions()}</select></div>
-    <div class="time-picker" id="last-${day}<select class="hh${hourOptions()}</select>:<select class="mm${minuteOptions()}</select><select class="ap${ampmOptions()}</select></div>
-    <label class="skip-label<input type="checkbox" id="skip-${day}" /> No class</label>`;
+    <div class="time-picker" id="first-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
+    <div class="time-picker" id="last-${day}"><select class="hh">${hourOptions()}</select>:<select class="mm">${minuteOptions()}</select><select class="ap">${ampmOptions()}</select></div>
+    <label class="skip-label"><input type="checkbox" id="skip-${day}" /> No class</label>`;
   dayRowsEl.appendChild(row);
 }
 function readTimePicker(id) {
@@ -801,7 +532,7 @@ function renderTable(tableId, rows, prefix) {
   rows.forEach((row, i) => {
     const tr = document.createElement("tr");
     const countClass = row.count === 0 ? "board-count zero" : "board-count";
-    tr.innerHTML = `<td><span class="route-badge${prefix}${i + 1}</span></td><td class="board-time${row.display}</td><td class="${countClass}${row.count}</td>`;
+    tr.innerHTML = `<td><span class="route-badge">${prefix}${i + 1}</span></td><td class="board-time">${row.display}</td><td class="${countClass}">${row.count}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -828,15 +559,3 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
