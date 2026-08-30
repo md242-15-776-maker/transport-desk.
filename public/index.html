@@ -335,6 +335,39 @@ button:hover { background: var(--navy); }
   }
 }
 </style>
+<style>
+/* Light Mode Day Badge */
+td:first-child, 
+.day-label, 
+.day-name {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px 14px !important;
+  background-color: #edf2f7 !important;
+  color: #1b4332 !important;
+  border: 1.5px solid #cbd5e0 !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  min-width: 95px !important;
+  text-align: center !important;
+}
+
+/* Dark Mode Day Badge (Matches dark & yellow accents) */
+body.dark td:first-child,
+body.dark .day-label,
+body.dark .day-name,
+[data-theme="dark"] td:first-child,
+[data-theme="dark"] .day-label,
+[data-theme="dark"] .day-name,
+.dark-theme td:first-child {
+  background-color: #1c1c1e !important;
+  color: #ffd60a !important;
+  border: 1.5px solid #3a3a3c !important;
+  box-shadow: 0 0 0 1px rgba(255, 214, 10, 0.15) !important;
+}
+</style>
 </head>
 <body>
 
@@ -625,4 +658,5 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
