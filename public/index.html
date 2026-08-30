@@ -623,6 +623,127 @@ html, body {
   }
 }
 </style>
+<style>
+/* Responsive Mobile Card Layout for Weekly Routine */
+@media (max-width: 768px) {
+  /* Break standard table behavior */
+  #routineForm table,
+  #routineForm thead,
+  #routineForm tbody,
+  #routineForm tr,
+  #routineForm td,
+  .routine-table,
+  .routine-table thead,
+  .routine-table tbody,
+  .routine-table tr,
+  .routine-table td {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Hide table header */
+  #routineForm thead,
+  .routine-table thead {
+    display: none !important;
+  }
+
+  /* Each weekday becomes a distinct, rounded card */
+  #routineForm tbody tr,
+  .routine-table tbody tr {
+    margin-bottom: 14px !important;
+    padding: 12px 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+  }
+
+  body.dark #routineForm tbody tr,
+  [data-theme="dark"] #routineForm tbody tr {
+    background: #18181b !important;
+    border-color: #27272a !important;
+  }
+
+  /* Row 1: Day Name */
+  #routineForm tbody tr td:first-child,
+  .routine-table tbody tr td:first-child {
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #1b4332 !important;
+    padding: 0 0 8px 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  body.dark #routineForm tbody tr td:first-child,
+  [data-theme="dark"] #routineForm tbody tr td:first-child {
+    color: #facc15 !important;
+  }
+
+  /* Row 2 & 3: Start Time & End Time Selectors */
+  #routineForm tbody tr td:not(:first-child):not(:last-child),
+  .routine-table tbody tr td:not(:first-child):not(:last-child) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+    padding: 4px 0 !important;
+    border: none !important;
+  }
+
+  /* Styled Dropdown Inputs */
+  #routineForm select,
+  .routine-table select {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 4px 6px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    text-align: center !important;
+  }
+
+  body.dark #routineForm select,
+  [data-theme="dark"] #routineForm select {
+    background-color: #27272a !important;
+    border-color: #3f3f46 !important;
+    color: #f4f4f5 !important;
+  }
+
+  /* Row 4: No Class Checkbox on its own line */
+  #routineForm tbody tr td:last-child,
+  .routine-table tbody tr td:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 0 0 0 !important;
+    margin-top: 6px !important;
+    border-top: 1px dashed #e2e8f0 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+  }
+
+  body.dark #routineForm tbody tr td:last-child,
+  [data-theme="dark"] #routineForm tbody tr td:last-child {
+    border-color: #27272a !important;
+    color: #a1a1aa !important;
+  }
+
+  #routineForm input[type="checkbox"],
+  .routine-table input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #2d6a4f !important;
+    cursor: pointer !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -913,6 +1034,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
