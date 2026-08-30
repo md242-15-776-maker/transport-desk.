@@ -961,45 +961,36 @@ async function loadLiveDemand() {
   }
 }
 </script>
-<style id="global-yellow-border-override">
-/* Force Yellow Accent Borders in Dark Mode Across All Mobile Selectors */
-:root[data-theme="dark"] tr,
-[data-theme="dark"] tr,
-.dark tr,
-body.dark tr,
-:root[data-theme="dark"] .card,
-[data-theme="dark"] .card,
-.dark .card,
-body.dark .card {
+
+<style id="individual-day-yellow-borders">
+/* Reset outer container border to default */
+.card,
+section.card,
+#routineForm,
+main > div {
+  border: 1px solid #27272a !important;
+}
+
+/* Apply yellow border directly to each individual weekday card */
+body.dark #routineForm tbody tr,
+[data-theme="dark"] #routineForm tbody tr,
+html.dark #routineForm tbody tr,
+.dark #routineForm tbody tr {
   border: 1.5px solid #facc15 !important;
-  border-color: #facc15 !important;
-  outline-color: #facc15 !important;
+  border-radius: 12px !important;
+  background: #18181b !important;
 }
 
-:root[data-theme="dark"] tr td,
-[data-theme="dark"] tr td,
-.dark tr td,
-body.dark tr td {
-  border-color: #facc15 !important;
-}
-
-:root[data-theme="dark"] select,
-[data-theme="dark"] select,
-.dark select,
-body.dark select {
-  border: 1px solid rgba(250, 204, 21, 0.4) !important;
-  color: #facc15 !important;
-}
-
-:root[data-theme="dark"] tr td:first-child,
-[data-theme="dark"] tr td:first-child,
-.dark tr td:first-child,
-body.dark tr td:first-child {
-  color: #facc15 !important;
+/* Light mode fallback */
+body.light #routineForm tbody tr,
+[data-theme="light"] #routineForm tbody tr {
+  border: 1.5px solid #e2e8f0 !important;
+  background: #ffffff !important;
 }
 </style>
 </body>
 </html>
+
 
 
 
