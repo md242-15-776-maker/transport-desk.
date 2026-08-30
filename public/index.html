@@ -368,48 +368,7 @@ body.dark .day-name,
   box-shadow: 0 0 0 1px rgba(255, 214, 10, 0.15) !important;
 }
 </style>
-<style>
-/* Base Day Name Badge */
-#routineForm table td:first-child,
-table td:first-child,
-.day-label,
-.day-name {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 6px 16px !important;
-  border-radius: 8px !important;
-  min-width: 105px !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  letter-spacing: 0.5px !important;
-  text-align: center !important;
-}
 
-/* Light Theme: Identical to Light Mode Route Badges (Forest Green) */
-body:not(.dark):not([data-theme="dark"]) #routineForm table td:first-child,
-body:not(.dark):not([data-theme="dark"]) table td:first-child,
-body:not(.dark):not([data-theme="dark"]) .day-label,
-body:not(.dark):not([data-theme="dark"]) .day-name {
-  border: 1.5px solid #2d6a4f !important;
-  background-color: rgba(45, 106, 79, 0.08) !important;
-  color: #2d6a4f !important;
-}
-
-/* Dark Theme: Identical to Dark Mode Route Badges (Yellow Gold) */
-body.dark #routineForm table td:first-child,
-body.dark table td:first-child,
-body.dark .day-label,
-body.dark .day-name,
-[data-theme="dark"] #routineForm table td:first-child,
-[data-theme="dark"] table td:first-child,
-[data-theme="dark"] .day-label,
-[data-theme="dark"] .day-name {
-  border: 1.5px solid #eab308 !important;
-  background-color: rgba(234, 179, 8, 0.08) !important;
-  color: #facc15 !important;
-}
-</style>
 <style>
 /* Modern Mobile Day Cards */
 @media (max-width: 768px) {
@@ -751,6 +710,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
