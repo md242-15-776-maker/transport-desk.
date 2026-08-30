@@ -692,6 +692,57 @@ html, body {
   h1 { font-size: 2rem !important; }
 }
 </style>
+<style>
+/* Modern Mobile Day Cards */
+@media (max-width: 768px) {
+  /* Day container card */
+  .routine-row, .day-row, tr, [class*="day-"] {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  }
+
+  /* Day Name Header */
+  .day-name, h4, h5, .routine-row strong, .day-label {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-bottom: 10px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Dropdown Selects & Inputs */
+  select {
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    min-width: 58px !important;
+  }
+
+  /* Checkbox / No Class row */
+  input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #15803d !important;
+    cursor: pointer !important;
+  }
+
+  label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -982,6 +1033,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
