@@ -9,15 +9,21 @@ function format12h(hhmm) {
   return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
+// Fixed: Strictly '<' ensures the student takes the bus departing BEFORE their class starts
 function matchGoingBus(firstClassTime) {
+  if (!firstClassTime) return null;
   let matched = null;
   for (const time of GOING_TIMES) {
-    if (time <= firstClassTime) matched = time;
+    if (time < firstClassTime) {
+      matched = time;
+    }
   }
   return matched;
 }
 
+// Earliest bus departing at or after their last class ends
 function matchComingBus(lastClassTime) {
+  if (!lastClassTime) return null;
   for (const time of COMING_TIMES) {
     if (time >= lastClassTime) return time;
   }
@@ -40,14 +46,14 @@ function calculateDemand(students, day, systemFilter) {
     if (gMatch) {
       const idx = GOING_TIMES.indexOf(gMatch);
       if (idx !== -1) goingSlots[idx].count++;
-    } else {
+    } else if (dayRoutine.first) {
       unmatchedCount++;
     }
 
     if (cMatch) {
       const idx = COMING_TIMES.indexOf(cMatch);
       if (idx !== -1) comingSlots[idx].count++;
-    } else {
+    } else if (dayRoutine.last) {
       unmatchedCount++;
     }
   }
