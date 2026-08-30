@@ -528,6 +528,101 @@ html, body {
   }
 }
 </style>
+<style>
+/* 100% Mobile Screen Fit for Weekly Routine */
+@media (max-width: 650px) {
+  #routineForm table,
+  table {
+    display: block !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+  }
+
+  table thead {
+    display: none !important;
+  }
+
+  table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Each day row becomes a 2-row grid */
+  table tbody tr {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    row-gap: 8px !important;
+    column-gap: 8px !important;
+    align-items: center !important;
+    padding: 10px 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  body.dark table tbody tr,
+  [data-theme="dark"] table tbody tr {
+    background: #18181b !important;
+    border-color: #27272a !important;
+  }
+
+  /* Line 1 Left: Day Name */
+  table tbody tr td:first-child {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #1b4332 !important;
+    padding: 0 !important;
+  }
+
+  body.dark table tbody tr td:first-child,
+  [data-theme="dark"] table tbody tr td:first-child {
+    color: #facc15 !important;
+  }
+
+  /* Line 1 Right: No Class Checkbox */
+  table tbody tr td:last-child {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    padding: 0 !important;
+  }
+
+  /* Line 2: Start & End Time Dropdowns */
+  table tbody tr td:not(:first-child):not(:last-child) {
+    grid-column: 1 / 3 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Clean responsive select boxes */
+  select {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    padding: 2px 4px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -818,6 +913,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
