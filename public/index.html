@@ -420,6 +420,27 @@ body.dark .day-name,
   }
 }
 </style>
+<style>
+/* Remove outer box / flex wrapper around route badges */
+td:first-child,
+.route-cell,
+table tbody tr td:first-child {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: table-cell !important;
+  padding: 10px 12px !important;
+  width: auto !important;
+}
+
+/* Keep only the small inner badge styled */
+.route-badge,
+td:first-child > span,
+td:first-child > div {
+  display: inline-flex !important;
+  width: auto !important;
+}
+</style>
 </head>
 <body>
 
@@ -710,6 +731,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
