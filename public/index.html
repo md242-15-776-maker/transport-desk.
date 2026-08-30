@@ -743,6 +743,74 @@ html, body {
   }
 }
 </style>
+<style id="dark-routine-patch">
+/* =========================================================
+   DARK THEME MOBILE ROUTINE CARDS FIX
+   ========================================================= */
+
+/* Catch all dark mode selector variations (.dark, [data-theme="dark"], body.dark-mode) */
+body.dark #routineForm tbody tr,
+[data-theme="dark"] #routineForm tbody tr,
+.dark-mode #routineForm tbody tr,
+body[class*="dark"] #routineForm tbody tr,
+body:not(.light) #routineForm tbody tr {
+  background: #18181b !important;
+  border-color: #2e2e33 !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5) !important;
+}
+
+/* Day Title in Dark Mode */
+body.dark #routineForm tbody tr td:first-child,
+[data-theme="dark"] #routineForm tbody tr td:first-child,
+.dark-mode #routineForm tbody tr td:first-child,
+body[class*="dark"] #routineForm tbody tr td:first-child,
+body:not(.light) #routineForm tbody tr td:first-child {
+  color: #facc15 !important;
+}
+
+/* Time Select Dropdowns in Dark Mode */
+body.dark #routineForm select,
+[data-theme="dark"] #routineForm select,
+.dark-mode #routineForm select,
+body[class*="dark"] #routineForm select,
+body:not(.light) #routineForm select {
+  background-color: #27272a !important;
+  border: 1px solid #3f3f46 !important;
+  color: #f4f4f5 !important;
+}
+
+/* No Class Checkbox & Label in Dark Mode */
+body.dark #routineForm tbody tr td:last-child,
+[data-theme="dark"] #routineForm tbody tr td:last-child,
+.dark-mode #routineForm tbody tr td:last-child,
+body[class*="dark"] #routineForm tbody tr td:last-child,
+body:not(.light) #routineForm tbody tr td:last-child {
+  border-top-color: #2e2e33 !important;
+  color: #a1a1aa !important;
+}
+
+/* Keep Light Mode clean and crisp */
+body.light #routineForm tbody tr,
+[data-theme="light"] #routineForm tbody tr,
+body.light-mode #routineForm tbody tr {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+body.light #routineForm tbody tr td:first-child,
+[data-theme="light"] #routineForm tbody tr td:first-child {
+  color: #1b4332 !important;
+}
+body.light #routineForm select,
+[data-theme="light"] #routineForm select {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+body.light #routineForm tbody tr td:last-child,
+[data-theme="light"] #routineForm tbody tr td:last-child {
+  color: #475569 !important;
+}
+</style>
 </head>
 <body>
 
@@ -1033,6 +1101,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
