@@ -441,6 +441,48 @@ td:first-child > div {
   width: auto !important;
 }
 </style>
+<style>
+/* Align Table Columns & Fix Route Header Position */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+}
+
+/* Route Column (Left) */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 120px !important;
+  text-align: left !important;
+  padding-left: 12px !important;
+  padding-right: 8px !important;
+}
+
+/* Route Badges Container */
+td:nth-child(1) span,
+td:nth-child(1) div,
+.route-badge {
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+/* Departs Column (Center/Left) */
+th:nth-child(2),
+td:nth-child(2) {
+  text-align: left !important;
+  padding-left: 16px !important;
+}
+
+/* Students Column (Right) */
+th:nth-child(3),
+td:nth-child(3) {
+  width: 100px !important;
+  text-align: right !important;
+  padding-right: 16px !important;
+}
+</style>
 </head>
 <body>
 
@@ -731,6 +773,7 @@ async function loadLiveDemand() {
 </script>
 </body>
 </html>
+
 
 
 
