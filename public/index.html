@@ -596,83 +596,7 @@ html, body {
 }
 </style>
 
-<style id="dark-routine-patch">
-/* Adapt Mobile Cards Directly to Current Theme */
-@media screen and (max-width: 768px) {
-  #routineForm tbody tr,
-  .routine-table tbody tr {
-    background-color: var(--card-bg, var(--surface, #18181b)) !important;
-    border: 1px solid var(--border, #27272a) !important;
-    color: var(--text, #f4f4f5) !important;
-  }
 
-  /* When body is explicitly dark or has dark background */
-  body.dark #routineForm tbody tr,
-  [data-theme="dark"] #routineForm tbody tr,
-  html.dark #routineForm tbody tr {
-    background-color: #18181b !important;
-    border-color: #2e2e33 !important;
-  }
-
-  /* When in light mode */
-  body.light #routineForm tbody tr,
-  [data-theme="light"] #routineForm tbody tr,
-  html.light #routineForm tbody tr {
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
-  }
-
-  /* Day title adapts cleanly */
-  #routineForm tbody tr td:first-child {
-    background: transparent !important;
-    color: inherit !important;
-  }
-}
-</style>
-<style id="yellow-border-patch">
-/* Dark Mode Yellow/Gold Borders */
-body.dark #routineForm tbody tr,
-[data-theme="dark"] #routineForm tbody tr,
-html.dark #routineForm tbody tr,
-.dark #routineForm tbody tr {
-  border: 1.5px solid rgba(250, 204, 21, 0.4) !important;
-  box-shadow: 0 0 10px rgba(250, 204, 21, 0.05) !important;
-}
-
-/* Day Title to match */
-body.dark #routineForm tbody tr td:first-child,
-[data-theme="dark"] #routineForm tbody tr td:first-child,
-html.dark #routineForm tbody tr td:first-child,
-.dark #routineForm tbody tr td:first-child {
-  color: #facc15 !important;
-}
-
-/* Dropdown input borders */
-body.dark #routineForm select,
-[data-theme="dark"] #routineForm select,
-html.dark #routineForm select,
-.dark #routineForm select {
-  border: 1px solid rgba(250, 204, 21, 0.25) !important;
-  color: #facc15 !important;
-}
-
-/* No Class divider border */
-body.dark #routineForm tbody tr td:last-child,
-[data-theme="dark"] #routineForm tbody tr td:last-child,
-html.dark #routineForm tbody tr td:last-child,
-.dark #routineForm tbody tr td:last-child {
-  border-top: 1px dashed rgba(250, 204, 21, 0.3) !important;
-  color: #a1a1aa !important;
-}
-
-/* Checkbox accent */
-body.dark #routineForm input[type="checkbox"],
-[data-theme="dark"] #routineForm input[type="checkbox"],
-html.dark #routineForm input[type="checkbox"],
-.dark #routineForm input[type="checkbox"] {
-  accent-color: #facc15 !important;
-}
-</style>
 <style>body.dark #routineForm tr, [data-theme='dark'] #routineForm tr, body.dark .card, [data-theme='dark'] .card { border: 1.5px solid #facc15 !important; }</style></head>
 <body>
 
@@ -963,34 +887,35 @@ async function loadLiveDemand() {
 </script>
 
 
-<style id="individual-day-yellow-borders">
-/* Reset outer container border to default */
-.card,
-section.card,
-#routineForm,
-main > div {
-  border: 1px solid #27272a !important;
+
+<style id="theme-border-fix">
+/* 1. Remove Yellow Outline from Page / Outer Sections */
+html, body, main, #mainContainer, .container, #dashboardView, #routineView, section.card {
+  border-color: #27272a !important;
+  outline: none !important;
 }
 
-/* Apply yellow border directly to each individual weekday card */
-body.dark #routineForm tbody tr,
-[data-theme="dark"] #routineForm tbody tr,
-html.dark #routineForm tbody tr,
-.dark #routineForm tbody tr {
+/* 2. Turn Individual Day Cards (Saturday, Sunday, Monday, etc.) Yellow */
+[data-theme="dark"] #routineForm tr,
+.dark #routineForm tr,
+body.dark #routineForm tr,
+[data-theme="dark"] tr,
+.dark tr,
+body.dark tr,
+[data-theme="dark"] .day-card,
+.dark .day-card,
+[data-theme="dark"] .routine-row,
+.dark .routine-row,
+[data-theme="dark"] fieldset,
+.dark fieldset {
   border: 1.5px solid #facc15 !important;
   border-radius: 12px !important;
-  background: #18181b !important;
-}
-
-/* Light mode fallback */
-body.light #routineForm tbody tr,
-[data-theme="light"] #routineForm tbody tr {
-  border: 1.5px solid #e2e8f0 !important;
-  background: #ffffff !important;
+  background-color: #18181b !important;
 }
 </style>
 </body>
 </html>
+
 
 
 
