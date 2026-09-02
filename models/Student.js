@@ -13,6 +13,11 @@ const StudentSchema = new mongoose.Schema(
     studentId: { type: String, required: true, unique: true, index: true, trim: true },
     name: { type: String, required: true, trim: true },
     semesterSystem: { type: String, enum: ["bi", "tri"], required: true },
+    station: {
+      type: String,
+      enum: ["Collegate", "Station Road", "Kamarpara"],
+      default: "Collegate"
+    },
     routine: {
       Saturday: { type: DayRoutineSchema, default: null },
       Sunday: { type: DayRoutineSchema, default: null },

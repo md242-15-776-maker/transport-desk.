@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231d4ed8'/%3E%3Cpath d='M20 22c0-4.4 3.6-8 8-8h8c4.4 0 8 3.6 8 8v18c0 3-2 5.5-5 6.2V50a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-3H29v3a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-3.8c-3-.7-5-3.2-5-6.2V22zm6-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm16 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-18 6h24v10H24V26zm3 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm14 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' fill='%23ffffff'/%3E%3C/svg%3E">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Transport Desk</title>
@@ -580,12 +581,31 @@ html, body {
   <button class="active" data-page="home">Home</button>
   <button data-page="routine">Submit routine</button>
   <button data-page="dashboard">Dashboard</button>
-  <div class="theme-toggle">
-    <span class="tt-label" id="ttLabel"><span class="tt-icon">☀</span><span>Light</span></span>
-    <button class="theme-switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Toggle light/dark theme">
-      <span class="knob"></span>
-    </button>
-  </div>
+  <label class="theme-toggle-slider" for="themeToggle" title="Toggle light/dark mode">
+      <input type="checkbox" id="themeToggle" />
+      <span class="slider-track">
+        <!-- Sun icon (Left) -->
+        <svg class="slider-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <!-- Moon icon (Right) -->
+        <svg class="slider-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </span>
+      <span class="slider-knob">
+        <!-- Floating Active Sun -->
+        <svg class="knob-icon active-sun" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <!-- Floating Active Moon -->
+        <svg class="knob-icon active-moon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </span>
+    </label>
 </div>
 
 <div class="page active" id="page-home">
@@ -660,10 +680,16 @@ html, body {
   <option value="tri" selected>Tri-semester</option>
   <option value="bi">Bi-semester</option>
 </select>
+<label>Station</label>
+          <select id="station">
+            <option value="Collegate" selected>Collegate</option>
+            <option value="Station Road">Station Road</option>
+            <option value="Kamarpara">Kamarpara</option>
+          </select>
     </div>
     <div class="card">
       <h3>Weekly routine</h3>
-      <p class="card-note">Enter your first class start time and last class end time for each day. Check "No class" for a day off.</p>
+      <p class="card-note">Select your preferred going and coming bus for each day. Check "No class" for a day off.</p>
       <div id="dayRows"></div>
       <button id="submitBtn">Save routine</button>
       <div id="status"></div>
@@ -690,11 +716,11 @@ html, body {
     </div>
     <div class="card">
       <h3>Going — to campus</h3>
-      <table class="board" id="goingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
+      <table class="board" id="goingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:center">Clg</th><th style="text-align:center">SR</th><th style="text-align:center">KP</th><th style="text-align:right; color:#7a7878;">Total</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card">
       <h3>Coming — from campus</h3>
-      <table class="board" id="comingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:right">Students</th></tr></thead><tbody></tbody></table>
+      <table class="board" id="comingTable"><thead><tr><th>Route</th><th>Departs</th><th style="text-align:center">Clg</th><th style="text-align:center">SR</th><th style="text-align:center">KP</th><th style="text-align:right; color:#7a7878;">Total</th></tr></thead><tbody></tbody></table>
     </div>
     <div id="unmatchedBox" class="unmatched" style="display:none"></div>
   </div>
@@ -718,21 +744,23 @@ function showPage(name) {
 document.querySelectorAll('.preview-switch > button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.goto)));
 
-/* Theme Switcher */
-const themeSwitch = document.getElementById('themeSwitch');
-const ttLabel = document.getElementById('ttLabel');
-themeSwitch.addEventListener('click', () => {
-  const goingDark = themeSwitch.getAttribute('aria-checked') !== 'true';
-  themeSwitch.setAttribute('aria-checked', String(goingDark));
-  document.documentElement.setAttribute('data-theme', goingDark ? 'dark' : 'light');
-  ttLabel.innerHTML = goingDark 
-    ? '<span class="tt-icon">☾</span><span>Dark</span>' 
-    : '<span class="tt-icon">☀</span><span>Light</span>';
-});
+
+const themeToggle = document.getElementById('themeToggle');
+
+if (themeToggle) {
+  // Sync slider if page loaded in dark mode
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  themeToggle.checked = isDark;
+
+  themeToggle.addEventListener('change', () => {
+    const goingDark = themeToggle.checked;
+    document.documentElement.setAttribute('data-theme', goingDark ? 'dark' : 'light');
+  });
+}
 
 /* Marquee Stream */
 const GOING = ["7:00 AM", "8:30 AM", "10:00 AM", "12:00 PM"];
-const COMING = ["11:30 AM", "1:30 PM", "3:00 PM", "4:20 PM", "6:10 PM"];
+const COMING = ["11:30 AM", "1:30 PM", "4:20 PM", "6:10 PM"];
 const tickerItems = [...GOING.map(t => `Going ${t}`), ...COMING.map(t => `Coming ${t}`)];
 const track = document.getElementById("tickerTrack");
 const fullList = [...tickerItems, ...tickerItems];
@@ -742,55 +770,49 @@ track.innerHTML = fullList.map(item => `<span>${item}</span>`).join("");
 const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
 const dayRowsEl = document.getElementById("dayRows");
 
-function hourOptions(selected = 1) { 
-  return Array.from({ length: 12 }, (_, i) => i + 1)
-    .map(h => `<option value="${h}" ${Number(selected) === h ? 'selected' : ''}>${h}</option>`)
-    .join(""); 
-}
+// Schedule options
+const GOING_BUSES = [
+  { value: "07:00", text: "7:00 AM" },
+  { value: "08:30", text: "8:30 AM" },
+  { value: "10:00", text: "10:00 AM" },
+  { value: "12:00", text: "12:00 PM" }
+];
 
-function minuteOptions(selected = "00") { 
-  return ["00", "15", "30", "45"]
-    .map(m => `<option value="${m}" ${String(selected) === m ? 'selected' : ''}>${m}</option>`)
-    .join(""); 
-}
+const COMING_BUSES = [
+  { value: "11:15", text: "11:15 AM" },
+  { value: "13:30", text: "1:30 PM" },
+  { value: "16:20", text: "4:20 PM" },
+  { value: "18:10", text: "6:10 PM" }
+];
 
-function ampmOptions(selected = "AM") { 
-  return `<option value="AM" ${selected === 'AM' ? 'selected' : ''}>AM</option><option value="PM" ${selected === 'PM' ? 'selected' : ''}>PM</option>`; 
-}
-
-function to24Hour(hour12, minute, period) { 
-  let h = parseInt(hour12, 10) % 12; 
-  if (period === "PM") h += 12; 
-  return `${String(h).padStart(2, "0")}:${minute}`; 
-}
+dayRowsEl.innerHTML = "";
 
 for (const day of DAYS) {
   const row = document.createElement("div");
   row.className = "day-row";
   row.innerHTML = `
-    <label>${day}</label>
-    <div class="time-picker" id="first-${day}">
-      <select class="hh">${hourOptions(8)}</select>:<select class="mm">${minuteOptions("30")}</select><select class="ap">${ampmOptions("AM")}</select>
+    <label style="font-weight: 600; min-width: 90px;">${day}</label>
+    <div>
+      <select id="going-${day}">
+        ${GOING_BUSES.map(b => `<option value="${b.value}" ${b.value === "07:00" ? "selected" : ""}>${b.text}</option>`).join("")}
+      </select>
     </div>
-    <div class="time-picker" id="last-${day}">
-      <select class="hh">${hourOptions(5)}</select>:<select class="mm">${minuteOptions("30")}</select><select class="ap">${ampmOptions("PM")}</select>
+    <div>
+      <select id="coming-${day}">
+        ${COMING_BUSES.map(b => `<option value="${b.value}" ${b.value === "11:15" ? "selected" : ""}>${b.text}</option>`).join("")}
+      </select>
     </div>
-    <label class="skip-label"><input type="checkbox" id="skip-${day}" /> No class</label>`;
+    <label class="skip-label"><input type="checkbox" id="skip-${day}" /> No class</label>
+  `;
   dayRowsEl.appendChild(row);
-}
 
-function readTimePicker(id) {
-  const el = document.getElementById(id);
-  return to24Hour(el.querySelector(".hh").value, el.querySelector(".mm").value, el.querySelector(".ap").value);
-}
+  const skip = row.querySelector(`#skip-${day}`);
+  const goingSelect = row.querySelector(`#going-${day}`);
+  const comingSelect = row.querySelector(`#coming-${day}`);
 
-for (const day of DAYS) {
-  const skip = document.getElementById(`skip-${day}`);
-  const first = document.getElementById(`first-${day}`);
-  const last = document.getElementById(`last-${day}`);
   skip.addEventListener("change", () => {
-    first.querySelectorAll("select").forEach((s) => (s.disabled = skip.checked));
-    last.querySelectorAll("select").forEach((s) => (s.disabled = skip.checked));
+    goingSelect.disabled = skip.checked;
+    comingSelect.disabled = skip.checked;
   });
 }
 
@@ -800,6 +822,7 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
   const studentId = document.getElementById("studentId").value.trim();
   const name = document.getElementById("name").value.trim();
   const semesterSystem = document.getElementById("semesterSystem").value;
+  const station = document.getElementById("station").value;
 
   if (!studentId || !name) {
     statusEl.textContent = "Please fill in your Student ID and Name.";
@@ -809,28 +832,29 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
 
   const routine = {};
   for (const day of DAYS) {
-    if (document.getElementById(`skip-${day}`).checked) {
+    const isOff = document.getElementById(`skip-${day}`).checked;
+    if (isOff) {
       routine[day] = null;
-      continue;
+    } else {
+      routine[day] = {
+        first: document.getElementById(`going-${day}`).value,
+        last: document.getElementById(`coming-${day}`).value
+      };
     }
-    routine[day] = {
-      first: readTimePicker(`first-${day}`),
-      last: readTimePicker(`last-${day}`)
-    };
   }
 
-  statusEl.textContent = "Saving routine to server...";
+  statusEl.textContent = "Saving preferences...";
   statusEl.className = "";
 
   try {
     const res = await fetch("/api/routine", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentId, name, semesterSystem, routine })
+      body: JSON.stringify({ studentId, name, semesterSystem, station, routine })
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Submission failed");
-    statusEl.textContent = "Saved! Your routine has been recorded.";
+    statusEl.textContent = "Saved! Your preferred bus choices have been recorded.";
     statusEl.className = "ok";
   } catch (err) {
     statusEl.textContent = err.message;
@@ -862,8 +886,16 @@ function renderTable(tableId, rows, prefix) {
   tbody.innerHTML = "";
   rows.forEach((row, i) => {
     const tr = document.createElement("tr");
-    const countClass = row.count === 0 ? "board-count zero" : "board-count";
-    tr.innerHTML = `<td><span class="route-badge">${prefix}${i + 1}</span></td><td class="board-time">${row.display}</td><td class="${countClass}">${row.count}</td>`;
+    const count = row.count ?? row.total ?? 0;
+    const countClass = count === 0 ? "board-count zero" : "board-count";
+    tr.innerHTML = `
+      <td><span class="route-badge">${prefix}${i + 1}</span></td>
+      <td class="board-time">${row.display}</td>
+      <td style="text-align:center; font-weight:600;">${row.Clg ?? 0}</td>
+      <td style="text-align:center; font-weight:600;">${row.SR ?? 0}</td>
+      <td style="text-align:center; font-weight:600;">${row.KP ?? 0}</td>
+      <td style="text-align:right" class="${countClass}">${count}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
@@ -912,6 +944,133 @@ body.dark tr,
   border: 1.5px solid none !important;
   border-radius: 12px !important;
   background-color: #18181b !important;
+}
+.day-row select {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.time-col {
+  font-weight: 700 !important;
+}
+.day-row select {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.day-row label,
+.day-row .skip-label,
+.day-row .day-name,
+.day-row span {
+  font-weight: 800 !important;
+  color: var(--text);
+}
+
+.time-col {
+  font-weight: 700 !important;
+}
+.preview-switch {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 68px;
+  height: 34px;
+  cursor: pointer;
+  user-select: none;
+  /* Shift left by 8px and up by 4px */
+  transform: translate(-8px, -4px);
+}
+
+.theme-toggle-slider input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.slider-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #202b24;
+  box-shadow: inset 1px 2px 4px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  transition: background-color 0.25s ease;
+}
+
+.slider-icon {
+  width: 15px;
+  height: 15px;
+  stroke: #6b7280;
+  z-index: 1;
+}
+
+.slider-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
+}
+
+.knob-icon {
+  width: 17px;
+  height: 17px;
+  position: absolute;
+  transition: opacity 0.2s ease;
+}
+
+.active-sun {
+  opacity: 1;
+}
+
+.active-moon {
+  opacity: 0;
+}
+
+/* Checked / Light-to-Dark State */
+.theme-toggle-slider input:checked + .slider-track {
+  background: #111827;
+}
+
+.theme-toggle-slider input:checked ~ .slider-knob {
+  transform: translateX(34px);
+  background: #1f2937;
+}
+
+.theme-toggle-slider input:checked ~ .slider-knob .active-sun {
+  opacity: 0;
+}
+
+.theme-toggle-slider input:checked ~ .slider-knob .active-moon {
+  opacity: 1;
+}
+/* Sun icon inside knob -> Green */
+.slider-knob .active-sun {
+  stroke: #10b981 !important;
+}
+
+/* Moon icon inside knob -> Yellow */
+.slider-knob .active-moon {
+  stroke: #facc15 !important;
 }
 </style>
 </body>
