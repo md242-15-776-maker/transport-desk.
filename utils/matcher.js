@@ -9,9 +9,20 @@ function format12h(hhmm) {
   return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
+function createSlot(t) {
+  return {
+    display: format12h(t),
+    raw: t,
+    count: 0,
+    Clg: 0,
+    SR: 0,
+    KP: 0
+  };
+}
+
 function calculateDemand(students, day, systemFilter) {
-  const goingSlots = GOING_TIMES.map(t => ({ display: format12h(t), raw: t, count: 0 }));
-  const comingSlots = COMING_TIMES.map(t => ({ display: format12h(t), raw: t, count: 0 }));
+  const goingSlots = GOING_TIMES.map(createSlot);
+  const comingSlots = COMING_TIMES.map(createSlot);
   let unmatchedCount = 0;
 
   for (const student of students) {
@@ -19,21 +30,26 @@ function calculateDemand(students, day, systemFilter) {
     const dayRoutine = student.routine && student.routine[day];
     if (!dayRoutine) continue;
 
-    // Student directly picked the exact Going bus time
+    const station = student.station || "Collegate";
+    const stationKey = station === "Station Road" ? "SR" : (station === "Kamarpara" ? "KP" : "Clg");
+
+    // Going bus
     if (dayRoutine.first) {
       const idx = GOING_TIMES.indexOf(dayRoutine.first);
       if (idx !== -1) {
         goingSlots[idx].count++;
+        goingSlots[idx][stationKey] = (goingSlots[idx][stationKey] || 0) + 1;
       } else {
         unmatchedCount++;
       }
     }
 
-    // Student directly picked the exact Coming bus time
+    // Coming bus
     if (dayRoutine.last) {
       const idx = COMING_TIMES.indexOf(dayRoutine.last);
       if (idx !== -1) {
         comingSlots[idx].count++;
+        comingSlots[idx][stationKey] = (comingSlots[idx][stationKey] || 0) + 1;
       } else {
         unmatchedCount++;
       }
