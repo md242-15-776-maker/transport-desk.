@@ -19,6 +19,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API Endpoints
 app.use("/api", routineRoutes);
+// Lightweight health check endpoint for cron-job.org / uptime monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 // Catch-all route to serve the frontend
 app.use((req, res) => {
