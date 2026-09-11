@@ -40,6 +40,8 @@
   --title-stroke: 2px #16231D;
   --boarding-color: #2F9160;
   --boarding-stroke: 2.5px #16231D;
+  --sidebar-bg: rgba(255, 255, 255, 0.72);
+  --sidebar-border: rgba(47, 145, 96, 0.25);
 }
 
 /* DARK Theme — Bright Electric Yellow Hover */
@@ -70,6 +72,8 @@
   --title-stroke: 2px #000000;
   --boarding-color: #F5E400;
   --boarding-stroke: 2.5px #000000;
+  --sidebar-bg: rgba(14, 14, 14, 0.88);
+  --sidebar-border: rgba(245, 228, 0, 0.3);
 }
 
 * { box-sizing: border-box; }
@@ -186,7 +190,7 @@ button:hover { background: var(--navy); }
 .hero-rail-right a { color: var(--slate); font-size: 16px; text-decoration: none; }
 .hero-rail-right a:hover { color: var(--signal); }
 
-.hero-content { max-width: 1180px; margin: 0 auto; padding-left: 64px; padding-right: 64px; position: relative; z-index: 2; }
+.hero-content { max-width: 1180px; margin: 0 auto; padding-left: 190px; padding-right: 64px; position: relative; z-index: 2; }
 .hero-count { font-family: "IBM Plex Mono", monospace; font-size: 14px; color: var(--signal); letter-spacing: 0.08em; margin: 0 0 18px; animation: fadeUp 0.6s ease-out both; }
 .hero-count span { color: var(--slate); }
 
@@ -247,6 +251,165 @@ button:hover { background: var(--navy); }
 .float-card-2 { bottom: 56px; right: -22px; }
 
 @media (max-width: 900px) { .float-card { display: none !important; } }
+.hero-sidebar-menu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 175px;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-right: 1.5px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 44px 14px 24px;
+  z-index: 25;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.sidebar-item {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: var(--slate);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.sidebar-item i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.sidebar-item:hover {
+  background: var(--paper);
+  color: var(--signal);
+  transform: translateX(4px);
+}
+
+.sidebar-item.active {
+  background: var(--signal);
+  color: var(--btn-solid-color) !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .sidebar-item.active {
+  background: var(--signal);
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(245, 228, 0, 0.35);
+}
+
+
+.sidebar-footer-note {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--slate);
+  letter-spacing: 0.04em;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .hero-sidebar-menu {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    top: auto;
+    width: calc(100% - 24px);
+    height: 52px;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--sidebar-border);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px;
+    z-index: 9999;
+  }
+
+  .sidebar-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2px !important;
+    width: 100%;
+    margin: 0;
+  }
+
+  .sidebar-item {
+    flex: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 7px 2px !important;
+    margin: 0 !important;
+    font-size: 10px !important;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border-radius: 8px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .sidebar-item span {
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+  }
+
+  .sidebar-item i {
+    display: none !important;
+  }
+
+  .sidebar-item:hover {
+    transform: none;
+  }
+
+  .sidebar-item.active {
+    background: var(--signal);
+    color: var(--btn-solid-color) !important;
+  }
+
+  .sidebar-footer-note {
+    display: none !important;
+  }
+
+  .footer-socials {
+    margin-bottom: 70px !important;
+    padding-bottom: 10px !important;
+  }
+}
+
 
 .route-svg { width: 100%; height: 100%; }
 .route-line { stroke: var(--line-dark); stroke-width: 2; }
@@ -261,7 +424,142 @@ button:hover { background: var(--navy); }
   -webkit-text-stroke: var(--boarding-stroke); paint-order: stroke fill; text-align: left; line-height: 0.85; padding: 0 0 12px 0;
   letter-spacing: -0.02em; animation: fadeUp 0.7s ease-out 0.4s both; user-select: none;
 }
+/* Seamless gradient transition flowing into the footer */
+.faq-section {
+  width: 100%;
+  margin: 0;
+  padding: 70px 20px 60px;
+  background: linear-gradient(180deg, rgba(246, 244, 235, 0) 0%, rgb(133 247 184 / 45%) 50%, rgb(117 229 160 / 60%) 100%);
+  border-top: 1px solid rgba(82, 178, 137, 0.15);
+}
 
+/* Center header texts and pill badge */
+.faq-header {
+  max-width: 760px;
+  margin: 0 auto 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.faq-header .stat-pill,
+.faq-header .faq-pill-wrap {
+  margin: 0 auto 12px auto;
+  display: inline-flex;
+}
+
+.faq-title,
+.faq-subtitle {
+  text-align: center;
+  width: 100%;
+}
+
+.faq-accordion {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.faq-answer ol.route-steps {
+  text-align: left;
+  display: inline-block;
+  margin: 0 auto;
+  padding-left: 20px;
+}
+
+.faq-answer ol.route-steps ul {
+  list-style-type: disc;
+  padding-left: 18px;
+  margin: 4px 0 8px;
+}
+
+
+/* Frosted glass FAQ cards that blend with the background */
+.faq-item {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(20, 60, 40, 0.05);
+  transition: all 0.25s ease;
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(82, 178, 137, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Centered question text with right-pinned chevron */
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 18px 48px;
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-main, #142017) !important;
+  text-align: center;
+}
+
+.faq-question span {
+  text-align: center;
+  width: 100%;
+}
+
+.faq-chevron {
+  position: absolute;
+  right: 22px;
+  font-size: 16px;
+  color: var(--text-muted, #405545);
+  transition: transform 0.25s ease;
+}
+
+.faq-item.active .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--signal, #198754);
+}
+
+/* Answer text centered */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-out, opacity 0.25s ease-out;
+  padding: 0 22px;
+  background: transparent !important;
+}
+
+.faq-item.active .faq-answer {
+  opacity: 1;
+  padding-top: 8px;
+}
+
+.faq-answer p {
+  margin: 0;
+  padding-bottom: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--text-muted, #405545) !important;
+}
+
+/* Seamless footer merge */
+.site-footer {
+  border-top: none !important;
+  margin-top: 0 !important;
+  padding-top: 20px !important;
+  background: rgb(117 229 160 / 60%) !important;
+  background-image: none !important;
+}
 .ticker-band { background: var(--signal); overflow: hidden; padding: 14px 0; border-top: 1px solid var(--line); }
 .ticker-track { display: flex; width: max-content; animation: tickerScroll 22s linear infinite; }
 .ticker-track span { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; color: var(--btn-solid-color); white-space: nowrap; padding: 0 28px; text-transform: uppercase; }
@@ -272,25 +570,108 @@ button:hover { background: var(--navy); }
   border-top: 1px solid rgba(82, 178, 137, 0.25);
   background-color: #F6F4EB;
   background-image: 
-    radial-gradient(at 15% 20%, rgba(134, 207, 172, 0.65) 0px, transparent 55%),
-    radial-gradient(at 85% 15%, rgba(186, 230, 203, 0.70) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(98, 182, 143, 0.40) 0px, transparent 60%),
-    radial-gradient(at 90% 85%, rgba(246, 244, 235, 1) 0px, transparent 40%);
+   radial-gradient(at 15% 20%, rgb(54 225 143 / 65%) 0px, transparent 55%), radial-gradient(at 85% 15%, rgb(49 207 110 / 70%) 0px, transparent 50%), radial-gradient(at 50% 80%, rgba(98, 182, 143, 0.40) 0px, transparent 60%), radial-gradient(at 90% 85%, rgba(246, 244, 235, 1) 0px, transparent 40%);
   background-size: 100% 100%;
   display: flex;
   justify-content: center;
   position: relative;
 }
 
+/* Dark Mode Yellow/Gold Ambient Gradient */
+/* Dark Mode: Pure Cyber/Electric Yellow & Dark Backdrop */
+body.dark .faq-section,
+[data-theme='dark'] .faq-section {
+  background-color: #0E0E0E !important;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 14, 14, 0.2) 0%,
+    rgba(254, 222, 0, 0.28) 50%,
+    rgba(255, 234, 32, 0.52) 100%
+  ) !important;
+  border-top: 1px solid rgba(254, 222, 0, 0.35) !important;
+}
+/* Ensure dark, high-contrast text inside FAQ answer cards */
+body.dark .faq-answer,
+body.dark .faq-answer *,
+[data-theme='dark'] .faq-answer,
+[data-theme='dark'] .faq-answer * {
+  color: #141414 !important; /* Crisp dark slate/black */
+}
+
+/* Fix route list layout and left alignment */
+.faq-answer .route-steps {
+  text-align: left;
+  display: inline-block;
+  margin: 10px auto 0;
+  padding-left: 24px;
+  line-height: 1.7;
+}
+
+.faq-answer .route-steps li {
+  margin-bottom: 8px;
+  color: #141414 !important;
+}
+
+.faq-answer .route-steps ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 4px 0 6px;
+}
+
+.faq-answer .route-steps ul li {
+  color: #333333 !important;
+  font-size: 13px;
+}
+body.dark .faq-title,
+[data-theme='dark'] .faq-title {
+  color: #FEDE00 !important;
+}
+
+body.dark .faq-subtitle,
+[data-theme='dark'] .faq-subtitle {
+  color: #E2E8F0 !important;
+}
+
+/* Crisp light cards with electric-yellow accents */
+body.dark .faq-item,
+[data-theme='dark'] .faq-item {
+  background: rgba(254, 249, 195, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid #FEDE00 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.dark .faq-item:hover,
+[data-theme='dark'] .faq-item:hover {
+  background: #FEF9C3 !important;
+  border-color: #FFEA20 !important;
+  box-shadow: 0 4px 24px rgba(254, 222, 0, 0.3) !important;
+}
+
+body.dark .faq-question span,
+[data-theme='dark'] .faq-question span {
+  color: #141414 !important;
+}
+
+body.dark .faq-chevron,
+[data-theme='dark'] .faq-chevron {
+  color: #141414 !important;
+}
+
+body.dark .faq-answer p,
+[data-theme='dark'] .faq-answer p {
+  color: #262626 !important;
+}
+
+/* Seamless footer match in pure yellow */
 body.dark .site-footer,
 [data-theme='dark'] .site-footer {
-  background-color: #0E0E0E !important;
-  background-image: 
-    radial-gradient(at 20% 25%, rgba(254, 222, 0, 0.22) 0px, transparent 55%),
-    radial-gradient(at 80% 20%, rgba(212, 175, 55, 0.20) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(180, 140, 10, 0.15) 0px, transparent 60%),
-    radial-gradient(at 85% 85%, rgba(14, 14, 14, 1) 0px, transparent 45%) !important;
-  border-top: 1px solid rgba(254, 222, 0, 0.2) !important;
+  background: rgba(255, 234, 32, 0.52) !important;
+  background-image: none !important;
+  border-top: none !important;
+  margin-top: 0 !important;
+  padding-top: 20px !important;
 }
 .footer-container {
   display: flex;
@@ -389,8 +770,48 @@ body.dark .site-footer,
 @media (max-width: 760px) {
   .hero-rail { display: none; }
   .hero-visual { display: none; }
-  .hero-content { padding-left: 24px; padding-right: 24px; }
+.hero-content { 
+    padding-left: 20px !important; 
+    padding-right: 20px !important; 
+    padding-bottom: 72px !important; 
+  }
   .hero-bottom-word { padding-left: 0; }
+}
+/* Profile Button Box & Hover */
+.nav-profile-btn {
+  flex: 0 0 auto !important;
+  margin: 0 16px 0 auto !important;
+  padding: 8px 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #8A96A8 !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+:root .nav-profile-btn:hover,
+[data-theme="light"] .nav-profile-btn:hover {
+  background: rgba(47, 145, 96, 0.16) !important;
+  border-color: #2F9160 !important;
+  color: #2F9160 !important;
+  box-shadow: 0 0 10px rgba(47, 145, 96, 0.25) !important;
+}
+
+[data-theme="dark"] .nav-profile-btn:hover,
+body.dark .nav-profile-btn:hover {
+  background: rgba(245, 228, 0, 0.14) !important;
+  border-color: #F5E400 !important;
+  color: #F5E400 !important;
+  box-shadow: 0 0 12px rgba(245, 228, 0, 0.35) !important;
 }
 </style>
 <style>
@@ -784,6 +1205,9 @@ html, body {
   <button class="active" data-page="home">Home</button>
   <button data-page="routine">Submit routine</button>
   <button data-page="dashboard">Dashboard</button>
+<button type="button" id="openProfileBtn" class="nav-profile-btn">
+    <i class="ti ti-user" style="font-size: 13px;"></i><span id="profileNavLabel">PROFILE</span>
+  </button>
   <label class="theme-toggle-slider" for="themeToggle" title="Toggle light/dark mode">
       <input type="checkbox" id="themeToggle" />
       <span class="slider-track">
@@ -821,7 +1245,35 @@ html, body {
     <section class="hero">
       <div class="hero-blob hero-blob-a" aria-hidden="true"></div>
       <div class="hero-blob hero-blob-b" aria-hidden="true"></div>
-      <div class="hero-rail hero-rail-left"><span></span><span></span><span></span></div>
+      <aside class="hero-sidebar-menu">
+  
+ <nav class="sidebar-links">
+            <button class="sidebar-item active" data-action="announcement">
+              <i class="ti ti-bell"></i>
+              <span>Notice</span>
+            </button>
+            <button class="sidebar-item" data-action="schedule">
+              <i class="ti ti-calendar-time"></i>
+              <span>Schedule</span>
+            </button>
+            <button class="sidebar-item" data-action="routes">
+              <i class="ti ti-route"></i>
+              <span>Routes</span>
+            </button>
+            <button class="sidebar-item" data-action="rules">
+              <i class="ti ti-shield-check"></i>
+              <span>Rules</span>
+            </button>
+            <button class="sidebar-item" data-action="groups">
+              <i class="ti ti-users-group"></i>
+              <span>Groups</span>
+            </button>
+            <button class="sidebar-item" data-action="complain">
+              <i class="ti ti-message-report"></i>
+              <span>Complain</span>
+            </button>
+          </nav>
+</aside>
       <div class="hero-content">
         <p class="hero-count">01<span>/02</span></p>
         <h1 class="hero-title">A <span class="accent-word">SMARTER<svg class="squiggle" viewBox="0 0 200 90" preserveAspectRatio="none"><path d="M8,45 C8,15 45,6 100,6 C160,6 192,18 192,45 C192,74 155,84 100,84 C42,84 8,72 8,45 Z"/></svg></span><br/>WAY TO<br/>RIDE.</h1>
@@ -830,8 +1282,11 @@ html, body {
           <a class="btn-solid" data-goto="routine">Submit routine</a>
           <a class="btn-ghost" data-goto="dashboard">View live board <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="hero-stats">
-          <span class="stat-pill"><span class="stat-dot"></span>Sat–Thu only</span>
+        <div class="hero-stats" style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
+          <span class="stat-pill"><span class="stat-dot"></span>Sat-Thu only</span>
+          <a class="btn-solid" href="#committee" style="display: inline-flex; align-items: center; text-decoration: none;">
+            <i class="ti ti-users" style="margin-right: 6px; font-size: 1.1em;"></i>Committee Members
+          </a>
         </div>
         <div class="hero-dots"><span class="dot active"></span><span class="dot"></span></div>
         <div class="hero-bottom-word">BOARDING!</div>
@@ -928,6 +1383,83 @@ html, body {
     <div id="unmatchedBox" class="unmatched" style="display:none"></div>
   </div>
 </div>
+<!-- Questions & Queries Section -->
+  <section class="faq-section" id="faq">
+    <div class="faq-header">
+      <span class="stat-pill"><span class="stat-dot"></span>FAQ</span>
+      <h2 class="faq-title">Questions & Queries</h2>
+      <p class="faq-subtitle">Common questions about campus transport, routines, and schedules.</p>
+    </div>
+
+    <div class="faq-accordion">
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>HOW TO REACH DAFFODIL WITH LOCAL TRANSPORT?</span>
+          <i class="ti ti-chevron-down faq-chevron"></i>
+        </button>
+        <div class="faq-answer">
+         <div>
+  
+  <ol class="route-steps">
+  <li>
+    <strong>Collegate theke Station Road:</strong>
+    <ul>
+      <li>Rickshaw bhara: 20 Tk</li>
+      <li>Bus bhara: 10 Tk</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Station Road theke Kamarpara Mini Bus Stand:</strong> Mini bus e uthte hobe.
+  </li>
+  <li>
+    <strong>Kamarpara theke Ashulia Bazar:</strong>
+    <ul>
+      <li>Mini-Bus bhara: 20tk</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Ashulia Bazar theke DIU:</strong>
+    <ul>
+      <li>Rickshaw/Auto bhara: 40 Tk</li>
+    </ul>
+  </li>
+</ol>
+  
+</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Do buses run on Friday?</span>
+          <i class="ti ti-chevron-down faq-chevron"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, buses do run on Friday as well — please check the schedule.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Can I edit my submitted routine?</span>
+          <i class="ti ti-chevron-down faq-chevron"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, submit the form again using your Student ID. The system updates your previous submission automatically.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>How do I report route issues?</span>
+          <i class="ti ti-chevron-down faq-chevron"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Use the complaint box if you don't want to share your name or want to do it anonymously, or you can just complain directly in the Messenger group.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
 <footer class="site-footer">
@@ -965,6 +1497,57 @@ html, body {
     </div>
   </div>
 </footer>
+<!-- Profile & Staff Management Modal -->
+<div id="profileModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(6px); padding:16px;">
+  <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; width:100%; max-width:520px; padding:24px; color:var(--text); max-height:88vh; overflow-y:auto; box-shadow:var(--float-shadow); box-sizing:border-box;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:16px;">
+  <h3 style="margin:0; font-family:'Space Grotesk', sans-serif; font-size:17px; color:var(--signal);">STUDENT PROFILE</h3>
+      <button id="closeProfileModal" type="button" style="background:transparent; color:var(--slate); border:none; font-size:24px; cursor:pointer; margin:0; padding:0; line-height:1;">&times;</button>
+    </div>
+
+    <form id="profileForm">
+      <label style="margin-top:0;">Student ID</label>
+      <input id="profIdInput" placeholder="e.g. 242-15-776" required />
+      <label>Full Name</label>
+      <input id="profNameInput" placeholder="Your Full Name" required />
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+        <button type="submit" style="margin:0; background:var(--signal); color:var(--btn-solid-color); font-weight:700;">Save Profile</button>
+        <span id="profRoleDisplay" style="font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700; padding:4px 8px; border-radius:4px; background:var(--signal-dim); color:var(--signal); border:1px solid var(--signal); display:none;"></span>
+      </div>
+      <div id="profStatus" style="font-size:12px; margin-top:8px; font-family:'IBM Plex Mono', monospace;"></div>
+    </form>
+
+    <div id="staffSection" style="display:none; margin-top:22px; padding-top:16px; border-top:1px solid var(--line);">
+      <h4 style="margin:0 0 10px; font-family:'Space Grotesk', sans-serif; font-size:14px; text-transform:uppercase; color:var(--signal);">APPOINT STUDENT</h4>
+      
+      <form id="assignRoleForm" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <input id="targetIdInput" placeholder="Student ID" required style="flex:1; min-width:120px;" />
+       
+        <select id="targetRoleSelect" style="width:auto;">
+          <option value="executive">Executive</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" style="margin:0; padding:8px 14px; background:var(--signal); color:var(--btn-solid-color); font-weight:700;">Assign</button>
+      </form>
+
+      <h4 style="margin:16px 0 8px; font-family:'Space Grotesk', sans-serif; font-size:13px; text-transform:uppercase; color:var(--slate);">All Staff Members</h4>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:12px; font-family:'IBM Plex Mono', monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--line); text-align:left; color:var(--slate);">
+              <th style="padding:6px;">ID</th>
+              <th style="padding:6px;">Name</th>
+              <th style="padding:6px;">Role</th>
+              <th style="padding:6px; text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="staffTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 /* Router & Switcher */
 function showPage(name) {
@@ -973,7 +1556,7 @@ function showPage(name) {
   document.querySelectorAll('.preview-switch button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   if (name === 'dashboard') loadLiveDemand();
 }
-document.querySelectorAll('.preview-switch > button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+document.querySelectorAll('.preview-switch > button[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.goto)));
 
 
@@ -1304,6 +1887,204 @@ body.dark tr,
 .slider-knob .active-moon {
   stroke: #facc15 !important;
 }
+
 </style>
+
+
+<script>
+  document.querySelectorAll('.faq-question').forEach((button) => {
+    button.addEventListener('click', () => {
+      const currentItem = button.closest('.faq-item');
+      const currentAnswer = currentItem.querySelector('.faq-answer');
+      const isOpen = currentItem.classList.contains('active');
+
+      // Close all other open items
+      document.querySelectorAll('.faq-item').forEach((item) => {
+        item.classList.remove('active');
+        const ans = item.querySelector('.faq-answer');
+        if (ans) ans.style.maxHeight = null;
+      });
+
+      // Open the clicked one if it was previously closed
+      if (!isOpen) {
+        currentItem.classList.add('active');
+        currentAnswer.style.maxHeight = currentAnswer.scrollHeight + 'px';
+      }
+    });
+  });
+  /* Profile & Staff Modal Logic */
+let localUser = JSON.parse(localStorage.getItem("transport_user") || "null");
+
+const profileModal = document.getElementById("profileModal");
+const openProfileBtn = document.getElementById("openProfileBtn");
+const closeProfileModal = document.getElementById("closeProfileModal");
+const profileForm = document.getElementById("profileForm");
+const profIdInput = document.getElementById("profIdInput");
+const profNameInput = document.getElementById("profNameInput");
+const profRoleDisplay = document.getElementById("profRoleDisplay");
+const profStatus = document.getElementById("profStatus");
+const profileNavLabel = document.getElementById("profileNavLabel");
+const staffSection = document.getElementById("staffSection");
+const assignRoleForm = document.getElementById("assignRoleForm");
+const staffTableBody = document.getElementById("staffTableBody");
+
+function updateProfileUI() {
+  if (localUser) {
+    profIdInput.value = localUser.studentId;
+    profNameInput.value = localUser.name;
+    profileNavLabel.textContent = localUser.name.split(" ")[0].toUpperCase();
+   if (localUser.role === "admin" || localUser.role === "executive") {
+      profRoleDisplay.style.display = "inline-block";
+      profRoleDisplay.textContent = localUser.role.toUpperCase();
+    } else {
+      profRoleDisplay.style.display = "none";
+    }
+
+    const intakeId = document.getElementById("studentId");
+    const intakeName = document.getElementById("name");
+    if (intakeId && !intakeId.value) intakeId.value = localUser.studentId;
+    if (intakeName && !intakeName.value) intakeName.value = localUser.name;
+
+    if (localUser.role === "superadmin" || localUser.role === "admin") {
+      staffSection.style.display = "block";
+      fetchStaffList();
+    } else {
+      staffSection.style.display = "none";
+    }
+  } else {
+    profileNavLabel.textContent = "PROFILE";
+    profRoleDisplay.style.display = "none";
+    staffSection.style.display = "none";
+  }
+}
+
+openProfileBtn.addEventListener("click", () => {
+  profileModal.style.display = "flex";
+  updateProfileUI();
+});
+
+closeProfileModal.addEventListener("click", () => {
+  profileModal.style.display = "none";
+});
+
+// Save or Register Profile
+profileForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const studentId = profIdInput.value.trim();
+  const name = profNameInput.value.trim();
+
+  profStatus.textContent = "Saving...";
+  profStatus.style.color = "var(--slate)";
+
+  try {
+    const res = await fetch("/api/auth/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId, name })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    localUser = data.user;
+    localStorage.setItem("transport_user", JSON.stringify(localUser));
+    profStatus.textContent = "Saved successfully!";
+    profStatus.style.color = "var(--ok)";
+    updateProfileUI();
+  } catch (err) {
+    profStatus.textContent = err.message;
+    profStatus.style.color = "var(--alert)";
+  }
+});
+
+// Fetch All Staff Members
+async function fetchStaffList() {
+  try {
+    const res = await fetch("/api/auth/users");
+    const list = await res.json();
+    staffTableBody.innerHTML = "";
+
+    list.forEach((u) => {
+      const tr = document.createElement("tr");
+      tr.style.borderBottom = "1px solid var(--line)";
+      const isSuper = u.isPermanentSuperAdmin || u.role === "superadmin";
+
+      tr.innerHTML = `
+        <td style="padding: 6px;">${u.studentId}</td>
+        <td style="padding: 6px;">${u.name}</td>
+        <td style="padding: 6px;"><span style="text-transform: uppercase; font-size: 10px; font-weight: 700; color: var(--signal);">${u.role}</span></td>
+        <td style="padding: 6px; text-align: right;">
+          ${
+            isSuper
+              ? `<span style="color: var(--slate); font-size: 11px;">Protected</span>`
+              : `<button onclick="handleDeleteUser('${u.studentId}')" style="margin: 0; padding: 3px 8px; font-size: 10px; background: var(--alert); color: #fff; border-radius: 4px;">Remove</button>`
+          }
+        </td>
+      `;
+      staffTableBody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Failed to load staff list:", err);
+  }
+}
+
+// Appoint or Promote Member
+assignRoleForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const targetStudentId = document.getElementById("targetIdInput").value.trim();
+  const targetRole = document.getElementById("targetRoleSelect").value;
+
+  try {
+    const res = await fetch("/api/auth/assign-role", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        actorStudentId: localUser.studentId,
+        targetStudentId,
+        targetRole
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    document.getElementById("targetIdInput").value = "";
+    fetchStaffList();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// Remove User Handler
+window.handleDeleteUser = async function (targetStudentId) {
+  if (!confirm(`Are you sure you want to remove user ${targetStudentId}?`)) return;
+
+  try {
+    const res = await fetch("/api/auth/remove-user", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        actorStudentId: localUser.studentId,
+        targetStudentId
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    if (localUser.studentId === targetStudentId) {
+      localStorage.removeItem("transport_user");
+      location.reload();
+      return;
+    }
+
+    fetchStaffList();
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+// Initial sync
+updateProfileUI();
+</script>
+
+
 </body>
 </html>

@@ -7,6 +7,7 @@ const compression = require("compression");
 const path = require("path");
 
 const routineRoutes = require("./routes/routineRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,22 +20,29 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API Endpoints
 app.use("/api", routineRoutes);
-// Lightweight health check endpoint for cron-job.org / uptime monitoring
+app.use("/api/auth", authRoutes);
+
+// Lightweight health check endpoint for UptimeRobot / uptime monitoring
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Catch-all route to serve the frontend
-app.use((req, res) => {
+// Explicit 404 handler for API calls (Express 5 syntax)
+app.all("/api/{*path}", (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
+});
+
+// Catch-all route to serve the frontend single-page application (Express 5 syntax)
+app.get("/{*path}", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// 1. Start listening IMMEDIATELY so Render health checks pass
+// Start listening immediately
 app.listen(PORT, () => {
   console.log(`Server is running and listening on port ${PORT}`);
 });
 
-// 2. Connect to database
+// Database initialization with Atlas fallback to In-Memory
 async function initDatabase() {
   const mongoUri = process.env.MONGO_URI;
 
