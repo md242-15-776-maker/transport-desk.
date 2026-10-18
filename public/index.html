@@ -242,8 +242,31 @@ button:hover { background: var(--navy); }
 .hero-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--slate); opacity: 0.4; }
 .hero-dots .dot.active { background: var(--signal); opacity: 1; }
 
-.hero-visual { position: absolute; right: 90px; top: 90px; width: 380px; height: 380px; z-index: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--hero-visual-shadow); opacity: 1; }
-.hero-visual .route-svg { padding: 12px; box-sizing: border-box; }
+.hero-visual { 
+  position: absolute; 
+  right: 4vw; 
+  top: 70px; 
+  width: clamp(280px, 28vw, 380px); 
+  height: clamp(280px, 28vw, 380px); 
+  z-index: 1; 
+  background: var(--panel); 
+  border: 1px solid var(--line); 
+  border-radius: 28px; 
+  box-shadow: var(--hero-visual-shadow); 
+  opacity: 1; 
+}
+.hero-visual .route-svg { 
+  padding: 12px; 
+  box-sizing: border-box; 
+  width: 100%; 
+  height: 100%; 
+}
+
+@media (max-width: 1100px) {
+  .hero-visual {
+    display: none !important;
+  }
+}
 
 .float-card { position: absolute; z-index: 2; display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; font-family: "Space Grotesk", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: var(--text); box-shadow: var(--float-shadow); white-space: nowrap; }
 .float-card .fc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 4px var(--signal-dim); flex: none; }
@@ -1248,14 +1271,17 @@ html, body {
       <aside class="hero-sidebar-menu">
   
  <nav class="sidebar-links">
-            <button class="sidebar-item active" data-action="announcement">
-              <i class="ti ti-bell"></i>
-              <span>Notice</span>
-            </button>
-            <button class="sidebar-item" data-action="schedule">
-              <i class="ti ti-calendar-time"></i>
-              <span>Schedule</span>
-            </button>
+         <button type="button" id="openNoticeBtn" onclick="openNoticeModalDirect(event)" class="sidebar-item active" data-action="announcement" style="position: relative; display: flex; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <i class="ti ti-bell"></i>
+    <span>Notice</span>
+  </div>
+  <span id="noticeBadgeDot" style="display: none; width: 9px; height: 9px; min-width: 9px; min-height: 9px; background: #FF3B30; border: 2px solid #FFFFFF; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 59, 48, 0.9); margin-left: auto;"></span>
+</button>
+          <button type="button" id="openScheduleBtn" onclick="openScheduleModalDirect(event)" class="sidebar-item" data-action="schedule">
+  <i class="ti ti-calendar-time"></i>
+  <span>Schedule</span>
+</button>
             <button class="sidebar-item" data-action="routes">
               <i class="ti ti-route"></i>
               <span>Routes</span>
@@ -1519,7 +1545,7 @@ html, body {
     </form>
 
     <div id="staffSection" style="display:none; margin-top:22px; padding-top:16px; border-top:1px solid var(--line);">
-      <h4 style="margin:0 0 10px; font-family:'Space Grotesk', sans-serif; font-size:14px; text-transform:uppercase; color:var(--signal);">APPOINT STUDENT</h4>
+      <h4 style="margin:0 0 10px; font-family:'Space Grotesk', sans-serif; font-size:14px; text-transform:uppercase; color:var(--signal);">Appoint / Promote Staff</h4>
       
       <form id="assignRoleForm" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
         <input id="targetIdInput" placeholder="Student ID" required style="flex:1; min-width:120px;" />
@@ -2082,9 +2108,644 @@ window.handleDeleteUser = async function (targetStudentId) {
 };
 
 // Initial sync
-updateProfileUI();
+/* Notice Panel Logic */
+window.openNoticeModalDirect = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById("noticeModal");
+  if (modal) {
+    modal.style.display = "flex";
+    syncNoticeAdminView();
+    loadNotices();
+    dismissNoticeBadge();
+  }
+};
+
+function syncNoticeAdminView() {
+  const formWrap = document.getElementById("adminNoticeFormWrap");
+  if (!formWrap) return;
+  const isStaff = localUser && ["superadmin", "admin", "executive"].includes(localUser.role);
+  formWrap.style.display = isStaff ? "block" : "none";
+}
+
+async function checkNewNotices() {
+  try {
+    const res = await fetch("/api/notices");
+    const notices = await res.json();
+    if (Array.isArray(notices) && notices.length > 0) {
+      const latestNoticeId = notices[0]._id;
+      const seenNoticeId = localStorage.getItem("last_seen_notice_id");
+      const dot = document.getElementById("noticeBadgeDot");
+      if (dot && latestNoticeId !== seenNoticeId) {
+        dot.style.display = "inline-block";
+      }
+    }
+  } catch (err) {
+    console.error("Failed to check notices:", err);
+  }
+}
+
+async function dismissNoticeBadge() {
+  const dot = document.getElementById("noticeBadgeDot");
+  if (dot) dot.style.display = "none";
+
+  try {
+    const res = await fetch("/api/notices");
+    const notices = await res.json();
+    if (Array.isArray(notices) && notices.length > 0) {
+      localStorage.setItem("last_seen_notice_id", notices[0]._id);
+    }
+  } catch (err) {
+    console.error("Failed to update last seen notice:", err);
+  }
+}
+async function loadNotices() {
+  const container = document.getElementById("noticeListContainer");
+  if (!container) return;
+
+  try {
+    const res = await fetch("/api/notices");
+    const notices = await res.json();
+    container.innerHTML = "";
+
+    if (!Array.isArray(notices) || notices.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding: 28px 12px; color: var(--slate);">
+          <i class="ti ti-bell-off" style="font-size: 26px; display: block; margin-bottom: 6px; opacity: 0.6;"></i>
+          <p style="margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">No notice</p>
+        </div>
+      `;
+      return;
+    }
+
+   
+
+    const isStaff = localUser && ["superadmin", "admin", "executive"].includes(localUser.role);
+
+    notices.forEach((n) => {
+      const card = document.createElement("div");
+      card.style.cssText = `border:1px solid ${n.important ? 'var(--alert)' : 'var(--line)'}; background:var(--panel); border-radius:8px; padding:12px 14px; margin-bottom: 8px;`;
+
+      const dateObj = new Date(n.createdAt);
+      const formattedDate = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const formattedTime = dateObj.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; gap:8px;">
+          <strong style="font-size:14px; color:${n.important ? 'var(--alert)' : 'var(--text)'};">${n.title}</strong>
+          <span style="font-size:11px; color:var(--slate); font-family:'IBM Plex Mono', monospace; white-space:nowrap; text-align:right;">
+            ${formattedDate} &bull; ${formattedTime}
+          </span>
+        </div>
+        <p style="font-size:13px; color:var(--text); margin:6px 0 10px; line-height:1.5;">${n.content}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:10px; color:var(--slate); text-transform:uppercase; font-family:'IBM Plex Mono', monospace;">By ${n.authorName}</span>
+          ${isStaff ? `<button onclick="deleteNotice('${n._id}')" style="margin:0; padding:2px 8px; font-size:10px; background:var(--alert); color:#fff; border-radius:4px; cursor:pointer;">Delete</button>` : ''}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = `
+      <div style="text-align:center; padding: 28px 12px; color: var(--slate);">
+        <p style="margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">No notice</p>
+      </div>
+    `;
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  if (e.target && e.target.id === "submitNoticeBtn") {
+    const titleInput = document.getElementById("noticeTitleInput");
+    const contentInput = document.getElementById("noticeContentInput");
+    const importantCheck = document.getElementById("noticeImportantCheck");
+
+    const title = titleInput ? titleInput.value.trim() : "";
+    const content = contentInput ? contentInput.value.trim() : "";
+    const important = importantCheck ? importantCheck.checked : false;
+
+    if (!title || !content) {
+      alert("Please enter a title and content.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/notices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          actorStudentId: localUser?.studentId,
+          title,
+          content,
+          important
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      if (titleInput) titleInput.value = "";
+      if (contentInput) contentInput.value = "";
+      if (importantCheck) importantCheck.checked = false;
+      loadNotices();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+});
+
+window.deleteNotice = async function(id) {
+  if (!confirm("Are you sure you want to delete this notice?")) return;
+  try {
+    const res = await fetch(`/api/notices/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actorStudentId: localUser?.studentId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    loadNotices();
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+checkNewNotices();
+
+/* Multi-Region Schedule Switcher & Editor */
+let globalScheduleDoc = null;
+let currentRegionIndex = 0;
+let isScheduleEditing = false;
+
+window.openScheduleModalDirect = async function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById("scheduleModal");
+  if (modal) {
+    modal.style.display = "flex";
+    syncScheduleStaffControls();
+    await loadScheduleData();
+    syncScheduleStaffControls();
+  }
+};
+
+function syncScheduleStaffControls() {
+  const controls = document.getElementById("schStaffEditControls");
+  if (!controls) return;
+  localUser = JSON.parse(localStorage.getItem("transport_user") || "null");
+  const role = (localUser && localUser.role) ? String(localUser.role).toLowerCase() : "";
+  const isStaff = ["superadmin", "admin", "executive"].includes(role);
+  controls.style.display = isStaff ? "flex" : "none";
+}
+
+async function loadScheduleData() {
+  try {
+    const res = await fetch("/api/schedule");
+    globalScheduleDoc = await res.json();
+    if (!globalScheduleDoc.regions || globalScheduleDoc.regions.length === 0) {
+      globalScheduleDoc = { regions: [] };
+    }
+  } catch (err) {
+    console.error("Failed to fetch schedules:", err);
+  }
+  renderRegionTabs();
+  renderScheduleUI();
+}
+
+// Render Top Region Switcher Bar
+function renderRegionTabs() {
+  const tabContainer = document.getElementById("scheduleRegionTabs");
+  if (!tabContainer || !globalScheduleDoc || !globalScheduleDoc.regions) return;
+
+  const isStaff = localUser && ["superadmin", "admin", "executive"].includes(String(localUser.role).toLowerCase());
+
+  tabContainer.innerHTML = globalScheduleDoc.regions.map((reg, idx) => {
+    const isActive = idx === currentRegionIndex;
+    const activeStyle = isActive
+      ? "background:var(--signal); color:var(--btn-solid-color); border-color:var(--signal); font-weight:800;"
+      : "background:var(--paper); color:var(--slate); border-color:var(--line); font-weight:600;";
+
+    // Shows a red '✕' next to the region title only when EDIT mode is active
+    const removeBtn = (isScheduleEditing && isStaff && globalScheduleDoc.regions.length > 1)
+      ? `<span onclick="removeRegionTab(event, ${idx})" title="Delete ${reg.regionName} Region" style="margin-left:7px; font-weight:800; color:#ef4444; cursor:pointer; padding:0 3px;">✕</span>`
+      : "";
+
+    return `
+      <div style="display:inline-flex; align-items:center; border:1px solid; border-radius:6px; padding:5px 10px; font-size:12px; font-family:'IBM Plex Mono', monospace; text-transform:uppercase; transition:all 0.15s ease; ${activeStyle}">
+        <span onclick="switchScheduleRegion(${idx})" style="cursor:pointer;">${reg.regionName}</span>
+        ${removeBtn}
+      </div>
+    `;
+  }).join("");
+}
+
+window.removeRegionTab = function(e, idx) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  const regionToDelete = globalScheduleDoc.regions[idx];
+  if (!confirm(`Are you sure you want to delete the entire "${regionToDelete.regionName}" region schedule?`)) {
+    return;
+  }
+
+  // Remove the chosen region
+  globalScheduleDoc.regions.splice(idx, 1);
+
+  // Keep selected tab index within range
+  if (currentRegionIndex >= globalScheduleDoc.regions.length) {
+    currentRegionIndex = Math.max(0, globalScheduleDoc.regions.length - 1);
+  }
+
+  renderRegionTabs();
+  renderScheduleUI();
+  enableInlineScheduleEditing();
+};
+
+window.switchScheduleRegion = function(idx) {
+  if (isScheduleEditing) {
+    if (!confirm("Discard unsaved changes on this region tab?")) return;
+    isScheduleEditing = false;
+    const editBtn = document.getElementById("toggleScheduleEditBtn");
+    const saveBtn = document.getElementById("saveScheduleBtn");
+    if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
+    if (saveBtn) saveBtn.style.display = "none";
+  }
+  currentRegionIndex = idx;
+  renderRegionTabs();
+  renderScheduleUI();
+};
+
+function renderScheduleUI() {
+  if (!globalScheduleDoc || !globalScheduleDoc.regions || globalScheduleDoc.regions.length === 0) return;
+  const activeScheduleData = globalScheduleDoc.regions[currentRegionIndex];
+  if (!activeScheduleData) return;
+
+  document.getElementById("schCommunityTitle").textContent = activeScheduleData.communityTitle || `${activeScheduleData.regionName} Transport Community`;
+  document.getElementById("schSemesterTitle").textContent = activeScheduleData.semesterTitle || "Transport Schedule for Fall 2026";
+  document.getElementById("schNoticeNote").textContent = activeScheduleData.noticeNote || "";
+
+  const renderRoutes = (routes, containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (!routes || routes.length === 0) {
+      container.innerHTML = `<p style="text-align:center; color:var(--slate); font-size:13px; margin:10px 0;">No routes scheduled for this region.</p>`;
+      return;
+    }
+
+    container.innerHTML = routes.map((r) => {
+      const stopsHtml = (r.stops || []).map((s, idx) => {
+        const bg = idx % 2 === 0 ? "rgba(255, 255, 255, 0.05)" : "var(--panel)";
+        const pinHtml = (s.mapUrl && s.mapUrl.trim())
+          ? `<a href="${s.mapUrl}" target="_blank" rel="noopener noreferrer" title="View location on Google Maps" style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:rgba(239, 68, 68, 0.14); border:1px solid rgba(239, 68, 68, 0.45); color:#ef4444; margin-left:8px; text-decoration:none; transition:all 0.15s ease;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="#ef4444" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+              </svg>
+            </a>`
+          : "";
+
+        return `
+          <div style="background:${bg}; padding:9px 12px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--line); font-size:13.5px; font-weight:700; color:var(--text);">
+            <span>${s.time}</span>
+            <span style="font-weight:600; color:var(--slate); margin-left:6px;">${s.note || ""}</span>
+            ${pinHtml}
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div style="border-radius:8px; overflow:hidden; border:1px solid var(--line); margin-bottom:14px; background:var(--panel);">
+          <div style="background:${r.themeColor || '#2563eb'}; color:#ffffff; font-weight:700; font-size:14px; text-align:center; padding:8px 12px;">
+            ${r.routeTitle}
+          </div>
+          <div>${stopsHtml || '<p style="text-align:center; color:var(--slate); font-size:12px; margin:8px 0;">No stops added</p>'}</div>
+        </div>
+      `;
+    }).join("");
+  };
+
+  renderRoutes(activeScheduleData.satThuRoutes, "satThuRoutesContainer");
+  renderRoutes(activeScheduleData.fridayRoutes, "fridayRoutesContainer");
+}
+
+window.toggleScheduleEditDirect = function() {
+  isScheduleEditing = !isScheduleEditing;
+  const editBtn = document.getElementById("toggleScheduleEditBtn");
+  const saveBtn = document.getElementById("saveScheduleBtn");
+
+  if (editBtn) editBtn.textContent = isScheduleEditing ? "Cancel Edit" : "EDIT ROUTES & PINS";
+  if (saveBtn) saveBtn.style.display = isScheduleEditing ? "inline-block" : "none";
+
+  renderRegionTabs();
+
+  if (isScheduleEditing) {
+    enableInlineScheduleEditing();
+  } else {
+    renderScheduleUI();
+  }
+};
+
+function enableInlineScheduleEditing() {
+  const activeScheduleData = globalScheduleDoc?.regions?.[currentRegionIndex];
+  if (!activeScheduleData) return;
+
+  if (!Array.isArray(activeScheduleData.satThuRoutes)) activeScheduleData.satThuRoutes = [];
+  if (!Array.isArray(activeScheduleData.fridayRoutes)) activeScheduleData.fridayRoutes = [];
+
+  const commEl = document.getElementById("schCommunityTitle");
+  const semEl = document.getElementById("schSemesterTitle");
+  const noteEl = document.getElementById("schNoticeNote");
+
+  if (commEl) commEl.innerHTML = `<input id="editSchCommunity" value="${activeScheduleData.communityTitle || ''}" placeholder="Community Title" style="width:100%; text-align:center; font-weight:800; font-size:16px; padding:6px; background:var(--panel); color:var(--signal); border:1px solid var(--line); border-radius:4px;" />`;
+  if (semEl) semEl.innerHTML = `<input id="editSchTitle" value="${activeScheduleData.semesterTitle || 'Transport Schedule for Fall 2026'}" style="width:100%; text-align:center; font-weight:700; font-size:13px; padding:4px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; margin-top:4px;" />`;
+  if (noteEl) noteEl.innerHTML = `<textarea id="editSchNotice" rows="2" style="width:100%; font-size:12px; padding:6px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px;">${activeScheduleData.noticeNote || ''}</textarea>`;
+
+  const renderEditRoutes = (routes, sectionKey, containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    let html = "";
+
+    (routes || []).forEach((r, rIdx) => {
+      let stopsHtml = (r.stops || []).map((s, sIdx) => `
+        <div class="edit-stop-row" style="display:flex; flex-direction:column; gap:4px; padding:6px 8px; background:var(--panel); border-bottom:1px solid var(--line); margin-bottom:4px; border-radius:4px;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input class="stop-time-input" value="${s.time || ''}" placeholder="Time (e.g. 07:00 AM)" style="width:110px; font-weight:700; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+            <input class="stop-note-input" value="${s.note || ''}" placeholder="Note (e.g. Station Road)" style="flex:1; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+            <button type="button" onclick="removeStopRow('${sectionKey}', ${rIdx}, ${sIdx})" style="margin:0; padding:4px 8px; background:#ef4444; color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;">✕</button>
+          </div>
+          <input class="stop-map-input" value="${s.mapUrl || ''}" placeholder="Google Maps Pin Link (https://maps.google.com/?q=...)" style="font-size:11px; padding:4px; background:var(--paper); color:var(--text); border:1px dashed var(--line); border-radius:4px;" />
+        </div>
+      `).join("");
+
+      html += `
+        <div class="edit-route-card" style="border:1.5px solid var(--line); border-radius:8px; padding:10px; margin-bottom:12px; background:var(--paper);">
+          <div style="display:flex; gap:6px; margin-bottom:8px; align-items:center;">
+            <input class="route-title-input" value="${r.routeTitle || ''}" placeholder="Route Title" style="flex:1; font-weight:700; font-size:13px; padding:6px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+            <input class="route-color-input" type="color" value="${r.themeColor || '#2563eb'}" style="width:38px; height:32px; padding:0; border:none; cursor:pointer; border-radius:4px;" title="Banner Color" />
+            <button type="button" onclick="removeRouteCard('${sectionKey}', ${rIdx})" style="margin:0; padding:6px 10px; background:#dc2626; color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;">Delete Route</button>
+          </div>
+          <div class="edit-stops-container">${stopsHtml}</div>
+          <button type="button" onclick="addStopRow('${sectionKey}', ${rIdx})" style="margin-top:6px; padding:4px 10px; background:#3b82f6; color:#fff; border:none; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer;">+ Add Bus Stop</button>
+        </div>
+      `;
+    });
+
+    html += `<button type="button" onclick="addNewRouteCard('${sectionKey}')" style="width:100%; padding:8px; background:#10b981; color:#fff; border:none; font-weight:700; font-size:12px; border-radius:6px; margin-top:4px; cursor:pointer;">+ Add New Route Section</button>`;
+    container.innerHTML = html;
+  };
+
+  renderEditRoutes(activeScheduleData.satThuRoutes, "satThu", "satThuRoutesContainer");
+  renderEditRoutes(activeScheduleData.fridayRoutes, "friday", "fridayRoutesContainer");
+}
+
+function harvestCurrentInputs() {
+  const active = globalScheduleDoc?.regions?.[currentRegionIndex];
+  if (!active) return;
+
+  const commEl = document.getElementById("editSchCommunity");
+  const titleEl = document.getElementById("editSchTitle");
+  const noticeEl = document.getElementById("editSchNotice");
+
+  if (commEl) active.communityTitle = commEl.value;
+  if (titleEl) active.semesterTitle = titleEl.value;
+  if (noticeEl) active.noticeNote = noticeEl.value;
+
+  const extractSection = (containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+
+    const cards = container.querySelectorAll(".edit-route-card");
+    const result = [];
+
+    cards.forEach((card) => {
+      const titleInput = card.querySelector(".route-title-input");
+      const colorInput = card.querySelector(".route-color-input");
+      const stopsContainer = card.querySelector(".edit-stops-container");
+
+      const title = titleInput ? titleInput.value.trim() : "Custom Route";
+      const color = colorInput ? colorInput.value : "#2563eb";
+
+      const stopRows = stopsContainer ? stopsContainer.querySelectorAll(".edit-stop-row") : [];
+      const stops = [];
+
+      stopRows.forEach((row) => {
+        const timeInput = row.querySelector(".stop-time-input");
+        const noteInput = row.querySelector(".stop-note-input");
+        const mapInput = row.querySelector(".stop-map-input");
+
+        stops.push({
+          time: timeInput ? timeInput.value.trim() : "",
+          note: noteInput ? noteInput.value.trim() : "",
+          mapUrl: mapInput ? mapInput.value.trim() : ""
+        });
+      });
+
+      result.push({
+        routeTitle: title,
+        themeColor: color,
+        stops: stops
+      });
+    });
+
+    return result;
+  };
+
+  active.satThuRoutes = extractSection("satThuRoutesContainer");
+  active.fridayRoutes = extractSection("fridayRoutesContainer");
+}
+
+window.addStopRow = function(sectionKey, rIdx) {
+  harvestCurrentInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  if (!routes[rIdx].stops) routes[rIdx].stops = [];
+  routes[rIdx].stops.push({ time: "08:00 AM", note: "", mapUrl: "" });
+  enableInlineScheduleEditing();
+};
+
+window.removeStopRow = function(sectionKey, rIdx, sIdx) {
+  harvestCurrentInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes[rIdx].stops.splice(sIdx, 1);
+  enableInlineScheduleEditing();
+};
+
+window.addNewRouteCard = function(sectionKey) {
+  harvestCurrentInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes.push({
+    routeTitle: "New Route Title",
+    themeColor: "#2563eb",
+    stops: [{ time: "07:30 AM", note: "", mapUrl: "" }]
+  });
+  enableInlineScheduleEditing();
+};
+
+window.removeRouteCard = function(sectionKey, rIdx) {
+  if (!confirm("Are you sure you want to remove this route?")) return;
+  harvestCurrentInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes.splice(rIdx, 1);
+  enableInlineScheduleEditing();
+};
+
+window.addNewRegionPrompt = function() {
+  const name = prompt("Enter new region name (e.g. Mirpur, Gazipur, Dhanmondi):");
+  if (!name || !name.trim()) return;
+
+  const cleanName = name.trim();
+  const key = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  globalScheduleDoc.regions.push({
+    regionKey: key,
+    regionName: cleanName,
+    communityTitle: `${cleanName} Transport Community`,
+    semesterTitle: "Transport Schedule for Fall 2026",
+    satThuRoutes: [
+      {
+        routeTitle: `${cleanName} <> DSC`,
+        themeColor: "#2563eb",
+        stops: [{ time: "07:15 AM", note: "", mapUrl: "" }]
+      }
+    ],
+    fridayRoutes: [],
+    noticeNote: "University buses are strictly prohibited without a transport card."
+  });
+
+  currentRegionIndex = globalScheduleDoc.regions.length - 1;
+  renderRegionTabs();
+  renderScheduleUI();
+};
+
+window.saveScheduleDirect = async function() {
+  harvestCurrentInputs();
+
+  const stored = JSON.parse(localStorage.getItem("transport_user") || "null");
+  const formId = document.getElementById("profIdInput")?.value?.trim();
+  const actorId = stored?.studentId || (typeof localUser !== "undefined" && localUser?.studentId) || formId || "096";
+
+  const cleanPayload = {
+    actorStudentId: String(actorId).trim(),
+    scheduleData: {
+      regions: globalScheduleDoc.regions
+    },
+    regions: globalScheduleDoc.regions
+  };
+
+  try {
+    const res = await fetch("/api/schedule", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cleanPayload)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error);
+
+    globalScheduleDoc = result.schedule;
+    isScheduleEditing = false;
+
+    const editBtn = document.getElementById("toggleScheduleEditBtn");
+    const saveBtn = document.getElementById("saveScheduleBtn");
+    if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
+    if (saveBtn) saveBtn.style.display = "none";
+
+    renderRegionTabs();
+    renderScheduleUI();
+    alert("Changes saved successfully!");
+  } catch (err) {
+    alert("Save failed: " + err.message);
+  }
+};
+
 </script>
 
+<!-- Notice Modal -->
+<div id="noticeModal" onclick="if(event.target === this) this.style.display='none'" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(6px); padding:16px;">
+    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; width:100%; max-width:580px; padding:24px; color:var(--text); max-height:85vh; display:flex; flex-direction:column; box-shadow:var(--float-shadow); box-sizing:border-box;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
+      <h3 style="margin:0; font-family:'Space Grotesk', sans-serif; font-size:17px; color:var(--signal); display:flex; align-items:center; gap:8px;">
+        <i class="ti ti-bell"></i> TRANSPORT NOTICES
+      </h3>
+     <button id="closeNoticeModal" onclick="document.getElementById('noticeModal').style.display='none'" type="button" style="background:transparent; color:var(--slate); border:none; font-size:24px; cursor:pointer; margin:0; padding:0; line-height:1;">&times;</button>
+    </div>
 
+    <!-- Admin Post Notice Form (Hidden for non-admins) -->
+    <div id="adminNoticeFormWrap" style="display:none; margin-bottom:16px; padding:12px; border:1px dashed var(--line); border-radius:8px; background:var(--paper);">
+      <h4 style="margin:0 0 8px; font-size:13px; text-transform:uppercase; color:var(--signal); font-family:'Space Grotesk', sans-serif;">Post New Notice</h4>
+      <input id="noticeTitleInput" placeholder="Notice title..." style="margin-bottom:8px;" />
+      <textarea id="noticeContentInput" placeholder="Write notice details..." rows="3" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:13px; font-family:inherit; background:var(--panel); color:var(--text); margin-bottom:8px; box-sizing:border-box;"></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="margin:0; font-size:11px; display:inline-flex; align-items:center; gap:4px; text-transform:none; cursor:pointer;">
+          <input type="checkbox" id="noticeImportantCheck" style="width:auto; margin:0;" /> Mark as Urgent
+        </label>
+        <button id="submitNoticeBtn" type="button" style="margin:0; padding:6px 14px; font-size:12px; background:var(--signal); color:var(--btn-solid-color); font-weight:700;">Publish</button>
+      </div>
+    </div>
+
+    <!-- Notice Feed Container -->
+    <div id="noticeListContainer" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px; padding-right:4px;">
+     <div style="text-align:center; padding: 28px 12px; color: var(--slate);">
+  <i class="ti ti-bell-off" style="font-size: 26px; display: block; margin-bottom: 6px; opacity: 0.6;"></i>
+  <p style="margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">No notice</p>
+</div>
+    </div>
+
+  </div>
+</div>
+<!-- Schedule Modal -->
+<!-- Schedule Modal with Top Region Bar -->
+<div id="scheduleModal" onclick="if(event.target === this) this.style.display='none'" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(6px); padding:16px;">
+  <div style="background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:14px; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; box-shadow:var(--float-shadow); position:relative; padding:24px 22px 20px; font-family:'Inter', sans-serif;">
+    
+    <!-- Top Row: Region Switcher Bar & Close Button -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:18px; gap:8px;">
+      <!-- Region Selector Tabs (Tongi, Uttara, etc.) -->
+      <div id="scheduleRegionTabs" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"></div>
+      
+      <button type="button" onclick="document.getElementById('scheduleModal').style.display='none'" style="background:transparent; border:none; font-size:24px; color:var(--slate); cursor:pointer; line-height:1; padding:2px 6px;">&times;</button>
+    </div>
+
+    <!-- Header Section -->
+    <div style="text-align:center; margin-bottom:18px;">
+      <h2 id="schCommunityTitle" style="margin:0; font-family:'Space Grotesk', serif; font-size:24px; font-weight:800; color:var(--signal); letter-spacing:-0.02em;">Tongi Transport Community</h2>
+      <div id="schSemesterTitle" style="font-size:14.5px; font-weight:700; color:var(--text); opacity:0.9; margin-top:4px;">Transport Schedule for Fall 2026</div>
+    </div>
+
+    <!-- Saturday - Thursday Heading -->
+    <div style="text-align:center; margin:16px 0 10px;">
+      <span style="background:#fde047; color:#0f172a; font-weight:800; font-size:13.5px; padding:3px 18px; border-radius:4px; display:inline-block; letter-spacing:0.02em;">Saturday - Thursday</span>
+    </div>
+    <div id="satThuRoutesContainer"></div>
+
+    <!-- Friday Schedule Heading -->
+    <div style="text-align:center; margin:20px 0 10px;">
+      <span style="background:#fde047; color:#0f172a; font-weight:800; font-size:13.5px; padding:3px 18px; border-radius:4px; display:inline-block; letter-spacing:0.02em;">Friday Schedule</span>
+    </div>
+    <div id="fridayRoutesContainer"></div>
+
+    <!-- Footer Notice Note -->
+    <div style="font-size:12px; line-height:1.5; color:var(--text); background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:10px 12px; margin-top:14px;">
+      <strong>NB:</strong> <span id="schNoticeNote">University buses are strictly prohibited without a transport card, and all students must wear their ID cards while traveling or getting on the bus.</span>
+    </div>
+
+    <!-- Staff Controls Bar -->
+    <div id="schStaffEditControls" style="display:none; margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <button type="button" onclick="addNewRegionPrompt()" style="background:transparent; border:1px dashed var(--signal); color:var(--signal); font-size:11.5px; padding:6px 12px; border-radius:5px; font-weight:700; cursor:pointer;">+ Add New Region Tab</button>
+      <div>
+        <button type="button" id="toggleScheduleEditBtn" onclick="toggleScheduleEditDirect()" style="background:var(--ink); color:#ffffff; border:1px solid var(--line); font-size:12px; padding:7px 15px; border-radius:5px; font-weight:700; cursor:pointer;">EDIT ROUTES & PINS</button>
+        <button type="button" id="saveScheduleBtn" onclick="saveScheduleDirect()" style="display:none; background:var(--signal); color:var(--btn-solid-color); border:none; font-size:12px; padding:7px 16px; border-radius:5px; font-weight:700; cursor:pointer; margin-left:6px;">Save All Changes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

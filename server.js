@@ -8,9 +8,14 @@ const path = require("path");
 
 const routineRoutes = require("./routes/routineRoutes");
 const authRoutes = require("./routes/authRoutes");
+const noticeRoutes = require("./routes/noticeRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const scheduleRoutes = require("./routes/scheduleRoutes");
+
+// Under your other app.use calls
+app.use("/api/schedule", scheduleRoutes);
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
@@ -21,6 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // API Endpoints
 app.use("/api", routineRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/notices", noticeRoutes);
 
 // Lightweight health check endpoint for UptimeRobot / uptime monitoring
 app.get("/health", (req, res) => {
