@@ -9,13 +9,10 @@ const path = require("path");
 const routineRoutes = require("./routes/routineRoutes");
 const authRoutes = require("./routes/authRoutes");
 const noticeRoutes = require("./routes/noticeRoutes");
+const scheduleRoutes = require("./routes/scheduleRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const scheduleRoutes = require("./routes/scheduleRoutes");
-
-// Under your other app.use calls
-app.use("/api/schedule", scheduleRoutes);
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
@@ -27,55 +24,49 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", routineRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notices", noticeRoutes);
+app.use("/api/schedule", scheduleRoutes);
 
-// Lightweight health check endpoint for UptimeRobot / uptime monitoring
+// Lightweight health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Explicit 404 handler for API calls (Express 5 syntax)
+// Explicit 404 handler for API calls
 app.all("/api/{*path}", (req, res) => {
   res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
 });
 
-// Catch-all route to serve the frontend single-page application (Express 5 syntax)
+// Catch-all route to serve the frontend SPA
 app.get("/{*path}", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Start listening immediately
-app.listen(PORT, () => {
-  console.log(`Server is running and listening on port ${PORT}`);
-});
-
-// Database initialization with Atlas fallback to In-Memory
+// Self-Healing Database Initialization
 async function initDatabase() {
-  const mongoUri = process.env.MONGO_URI;
+  const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/transport-desk";
 
   try {
-    if (mongoUri && !mongoUri.includes("127.0.0.1")) {
-      await mongoose.connect(mongoUri, {
-        serverSelectionTimeoutMS: 10000,
-      });
-      console.log("Connected to MongoDB Atlas successfully!");
-    } else {
-      const { MongoMemoryServer } = require("mongodb-memory-server");
-      const mongod = await MongoMemoryServer.create();
-      await mongoose.connect(mongod.getUri());
-      console.log("Connected to In-Memory MongoDB!");
-    }
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 4000,
+    });
+    console.log("Connected to MongoDB successfully!");
   } catch (err) {
-    console.error("Database connection warning:", err.message);
-    console.log("Falling back to local in-memory DB...");
+    console.log("Local/Cloud DB not available. Automatically starting In-Memory MongoDB for local development...");
     try {
       const { MongoMemoryServer } = require("mongodb-memory-server");
       const mongod = await MongoMemoryServer.create();
       await mongoose.connect(mongod.getUri());
-      console.log("Connected to fallback In-Memory MongoDB!");
+      console.log("Connected to fallback In-Memory MongoDB successfully!");
     } catch (fallbackErr) {
-      console.error("Critical: Could not start fallback DB:", fallbackErr);
+      console.error("Critical: Could not start fallback database:", fallbackErr);
+      process.exit(1);
     }
   }
 }
 
-initDatabase();
+// Initialize DB and start listening
+initDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running and listening on port ${PORT}`);
+  });
+});

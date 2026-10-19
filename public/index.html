@@ -1537,10 +1537,15 @@ html, body {
       <input id="profIdInput" placeholder="e.g. 242-15-776" required />
       <label>Full Name</label>
       <input id="profNameInput" placeholder="Your Full Name" required />
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
-        <button type="submit" style="margin:0; background:var(--signal); color:var(--btn-solid-color); font-weight:700;">Save Profile</button>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="submit" style="margin:0; background:var(--signal); color:var(--btn-solid-color); font-weight:700;">Save Profile</button>
+          <button type="button" id="logoutBtn" style="margin:0; background:var(--alert); color:#fff; font-weight:700; display:none;">Log Out</button>
+        </div>
         <span id="profRoleDisplay" style="font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700; padding:4px 8px; border-radius:4px; background:var(--signal-dim); color:var(--signal); border:1px solid var(--signal); display:none;"></span>
       </div>
+      
       <div id="profStatus" style="font-size:12px; margin-top:8px; font-family:'IBM Plex Mono', monospace;"></div>
     </form>
 
@@ -1955,13 +1960,20 @@ const assignRoleForm = document.getElementById("assignRoleForm");
 const staffTableBody = document.getElementById("staffTableBody");
 
 function updateProfileUI() {
-  if (localUser) {
+  localUser = JSON.parse(localStorage.getItem("transport_user") || "null");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (localUser && localUser.studentId) {
     profIdInput.value = localUser.studentId;
     profNameInput.value = localUser.name;
     profileNavLabel.textContent = localUser.name.split(" ")[0].toUpperCase();
-   if (localUser.role === "admin" || localUser.role === "executive") {
+    
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+
+    const role = String(localUser.role || "student").toLowerCase();
+    if (["admin", "superadmin", "executive"].includes(role)) {
       profRoleDisplay.style.display = "inline-block";
-      profRoleDisplay.textContent = localUser.role.toUpperCase();
+      profRoleDisplay.textContent = role.toUpperCase();
     } else {
       profRoleDisplay.style.display = "none";
     }
@@ -1971,7 +1983,7 @@ function updateProfileUI() {
     if (intakeId && !intakeId.value) intakeId.value = localUser.studentId;
     if (intakeName && !intakeName.value) intakeName.value = localUser.name;
 
-    if (localUser.role === "superadmin" || localUser.role === "admin") {
+    if (["superadmin", "admin"].includes(role)) {
       staffSection.style.display = "block";
       fetchStaffList();
     } else {
@@ -1979,10 +1991,23 @@ function updateProfileUI() {
     }
   } else {
     profileNavLabel.textContent = "PROFILE";
+    if (logoutBtn) logoutBtn.style.display = "none";
     profRoleDisplay.style.display = "none";
     staffSection.style.display = "none";
   }
+
+  if (typeof syncNoticeAdminView === "function") syncNoticeAdminView();
+  if (typeof syncScheduleStaffControls === "function") syncScheduleStaffControls();
 }
+
+// Log Out Handler
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+  if (confirm("Are you sure you want to log out?")) {
+    localStorage.removeItem("transport_user");
+    localUser = null;
+    location.reload();
+  }
+});
 
 openProfileBtn.addEventListener("click", () => {
   profileModal.style.display = "flex";
@@ -2273,16 +2298,40 @@ window.deleteNotice = async function(id) {
 
 checkNewNotices();
 
-/* Multi-Region Schedule Switcher & Editor */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Clean & Reliable Schedule Manager */
 let globalScheduleDoc = null;
 let currentRegionIndex = 0;
 let isScheduleEditing = false;
 
 window.openScheduleModalDirect = async function(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   const modal = document.getElementById("scheduleModal");
   if (modal) {
     modal.style.display = "flex";
@@ -2306,16 +2355,15 @@ async function loadScheduleData() {
     const res = await fetch("/api/schedule");
     globalScheduleDoc = await res.json();
     if (!globalScheduleDoc.regions || globalScheduleDoc.regions.length === 0) {
-      globalScheduleDoc = { regions: [] };
+      globalScheduleDoc = { regions: [{ regionKey: "tongi", regionName: "Tongi", satThuRoutes: [], fridayRoutes: [] }] };
     }
   } catch (err) {
-    console.error("Failed to fetch schedules:", err);
+    globalScheduleDoc = { regions: [{ regionKey: "tongi", regionName: "Tongi", satThuRoutes: [], fridayRoutes: [] }] };
   }
   renderRegionTabs();
   renderScheduleUI();
 }
 
-// Render Top Region Switcher Bar
 function renderRegionTabs() {
   const tabContainer = document.getElementById("scheduleRegionTabs");
   if (!tabContainer || !globalScheduleDoc || !globalScheduleDoc.regions) return;
@@ -2328,13 +2376,12 @@ function renderRegionTabs() {
       ? "background:var(--signal); color:var(--btn-solid-color); border-color:var(--signal); font-weight:800;"
       : "background:var(--paper); color:var(--slate); border-color:var(--line); font-weight:600;";
 
-    // Shows a red '✕' next to the region title only when EDIT mode is active
     const removeBtn = (isScheduleEditing && isStaff && globalScheduleDoc.regions.length > 1)
-      ? `<span onclick="removeRegionTab(event, ${idx})" title="Delete ${reg.regionName} Region" style="margin-left:7px; font-weight:800; color:#ef4444; cursor:pointer; padding:0 3px;">✕</span>`
+      ? `<span onclick="removeRegionTab(event, ${idx})" style="margin-left:7px; font-weight:800; color:#ef4444; cursor:pointer;">✕</span>`
       : "";
 
     return `
-      <div style="display:inline-flex; align-items:center; border:1px solid; border-radius:6px; padding:5px 10px; font-size:12px; font-family:'IBM Plex Mono', monospace; text-transform:uppercase; transition:all 0.15s ease; ${activeStyle}">
+      <div style="display:inline-flex; align-items:center; border:1px solid; border-radius:6px; padding:5px 10px; font-size:12px; font-family:'IBM Plex Mono', monospace; text-transform:uppercase; ${activeStyle}">
         <span onclick="switchScheduleRegion(${idx})" style="cursor:pointer;">${reg.regionName}</span>
         ${removeBtn}
       </div>
@@ -2342,72 +2389,51 @@ function renderRegionTabs() {
   }).join("");
 }
 
-window.removeRegionTab = function(e, idx) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  const regionToDelete = globalScheduleDoc.regions[idx];
-  if (!confirm(`Are you sure you want to delete the entire "${regionToDelete.regionName}" region schedule?`)) {
-    return;
-  }
-
-  // Remove the chosen region
-  globalScheduleDoc.regions.splice(idx, 1);
-
-  // Keep selected tab index within range
-  if (currentRegionIndex >= globalScheduleDoc.regions.length) {
-    currentRegionIndex = Math.max(0, globalScheduleDoc.regions.length - 1);
-  }
-
-  renderRegionTabs();
-  renderScheduleUI();
-  enableInlineScheduleEditing();
-};
-
 window.switchScheduleRegion = function(idx) {
-  if (isScheduleEditing) {
-    if (!confirm("Discard unsaved changes on this region tab?")) return;
-    isScheduleEditing = false;
-    const editBtn = document.getElementById("toggleScheduleEditBtn");
-    const saveBtn = document.getElementById("saveScheduleBtn");
-    if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
-    if (saveBtn) saveBtn.style.display = "none";
-  }
+  if (isScheduleEditing) harvestDOMInputs();
   currentRegionIndex = idx;
+  isScheduleEditing = false;
+  const editBtn = document.getElementById("toggleScheduleEditBtn");
+  const saveBtn = document.getElementById("saveScheduleBtn");
+  if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
+  if (saveBtn) saveBtn.style.display = "none";
+
   renderRegionTabs();
   renderScheduleUI();
 };
 
 function renderScheduleUI() {
-  if (!globalScheduleDoc || !globalScheduleDoc.regions || globalScheduleDoc.regions.length === 0) return;
-  const activeScheduleData = globalScheduleDoc.regions[currentRegionIndex];
-  if (!activeScheduleData) return;
+  if (!globalScheduleDoc || !globalScheduleDoc.regions || !globalScheduleDoc.regions[currentRegionIndex]) return;
+  const active = globalScheduleDoc.regions[currentRegionIndex];
 
-  document.getElementById("schCommunityTitle").textContent = activeScheduleData.communityTitle || `${activeScheduleData.regionName} Transport Community`;
-  document.getElementById("schSemesterTitle").textContent = activeScheduleData.semesterTitle || "Transport Schedule for Fall 2026";
-  document.getElementById("schNoticeNote").textContent = activeScheduleData.noticeNote || "";
+  document.getElementById("schCommunityTitle").textContent = active.communityTitle || "Tongi Transport Community";
+  document.getElementById("schSemesterTitle").textContent = active.semesterTitle || "Transport Schedule for Fall 2026";
+  document.getElementById("schNoticeNote").textContent = active.noticeNote || "";
 
   const renderRoutes = (routes, containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return;
     if (!routes || routes.length === 0) {
-      container.innerHTML = `<p style="text-align:center; color:var(--slate); font-size:13px; margin:10px 0;">No routes scheduled for this region.</p>`;
+      container.innerHTML = `<p style="text-align:center; color:var(--slate); font-size:13px; margin:10px 0;">No routes scheduled.</p>`;
       return;
     }
 
     container.innerHTML = routes.map((r) => {
       const stopsHtml = (r.stops || []).map((s, idx) => {
         const bg = idx % 2 === 0 ? "rgba(255, 255, 255, 0.05)" : "var(--panel)";
-        const pinHtml = (s.mapUrl && s.mapUrl.trim())
-          ? `<a href="${s.mapUrl}" target="_blank" rel="noopener noreferrer" title="View location on Google Maps" style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:rgba(239, 68, 68, 0.14); border:1px solid rgba(239, 68, 68, 0.45); color:#ef4444; margin-left:8px; text-decoration:none; transition:all 0.15s ease;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';">
+       const rawMapUrl = s.mapUrl ? s.mapUrl.trim() : "";
+        const formattedMapUrl = rawMapUrl && !rawMapUrl.startsWith("http://") && !rawMapUrl.startsWith("https://") 
+          ? "https://" + rawMapUrl 
+          : rawMapUrl;
+
+        const pinHtml = formattedMapUrl
+          ? `<a href="${formattedMapUrl}" target="_blank" rel="noopener noreferrer" title="View location on Google Maps" style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:rgba(239, 68, 68, 0.14); border:1px solid rgba(239, 68, 68, 0.45); color:#ef4444; margin-left:8px; text-decoration:none;">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="#ef4444" stroke="#ef4444" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
               </svg>
             </a>`
           : "";
-
+          
         return `
           <div style="background:${bg}; padding:9px 12px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--line); font-size:13.5px; font-weight:700; color:var(--text);">
             <span>${s.time}</span>
@@ -2428,11 +2454,12 @@ function renderScheduleUI() {
     }).join("");
   };
 
-  renderRoutes(activeScheduleData.satThuRoutes, "satThuRoutesContainer");
-  renderRoutes(activeScheduleData.fridayRoutes, "fridayRoutesContainer");
+  renderRoutes(active.satThuRoutes, "satThuRoutesContainer");
+  renderRoutes(active.fridayRoutes, "fridayRoutesContainer");
 }
 
 window.toggleScheduleEditDirect = function() {
+  if (isScheduleEditing) harvestDOMInputs();
   isScheduleEditing = !isScheduleEditing;
   const editBtn = document.getElementById("toggleScheduleEditBtn");
   const saveBtn = document.getElementById("saveScheduleBtn");
@@ -2450,34 +2477,34 @@ window.toggleScheduleEditDirect = function() {
 };
 
 function enableInlineScheduleEditing() {
-  const activeScheduleData = globalScheduleDoc?.regions?.[currentRegionIndex];
-  if (!activeScheduleData) return;
+  const active = globalScheduleDoc?.regions?.[currentRegionIndex];
+  if (!active) return;
 
-  if (!Array.isArray(activeScheduleData.satThuRoutes)) activeScheduleData.satThuRoutes = [];
-  if (!Array.isArray(activeScheduleData.fridayRoutes)) activeScheduleData.fridayRoutes = [];
+  if (!Array.isArray(active.satThuRoutes)) active.satThuRoutes = [];
+  if (!Array.isArray(active.fridayRoutes)) active.fridayRoutes = [];
 
   const commEl = document.getElementById("schCommunityTitle");
   const semEl = document.getElementById("schSemesterTitle");
   const noteEl = document.getElementById("schNoticeNote");
 
-  if (commEl) commEl.innerHTML = `<input id="editSchCommunity" value="${activeScheduleData.communityTitle || ''}" placeholder="Community Title" style="width:100%; text-align:center; font-weight:800; font-size:16px; padding:6px; background:var(--panel); color:var(--signal); border:1px solid var(--line); border-radius:4px;" />`;
-  if (semEl) semEl.innerHTML = `<input id="editSchTitle" value="${activeScheduleData.semesterTitle || 'Transport Schedule for Fall 2026'}" style="width:100%; text-align:center; font-weight:700; font-size:13px; padding:4px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; margin-top:4px;" />`;
-  if (noteEl) noteEl.innerHTML = `<textarea id="editSchNotice" rows="2" style="width:100%; font-size:12px; padding:6px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px;">${activeScheduleData.noticeNote || ''}</textarea>`;
+  if (commEl) commEl.innerHTML = `<input id="editSchCommunity" value="${active.communityTitle || ''}" placeholder="Community Title" style="width:100%; text-align:center; font-weight:800; font-size:16px; padding:6px; background:var(--panel); color:var(--signal); border:1px solid var(--line); border-radius:4px;" />`;
+  if (semEl) semEl.innerHTML = `<input id="editSchTitle" value="${active.semesterTitle || ''}" placeholder="Semester Title" style="width:100%; text-align:center; font-weight:700; font-size:13px; padding:4px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; margin-top:4px;" />`;
+  if (noteEl) noteEl.innerHTML = `<textarea id="editSchNotice" rows="2" placeholder="Notice Note" style="width:100%; font-size:12px; padding:6px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px;">${active.noticeNote || ''}</textarea>`;
 
-  const renderEditRoutes = (routes, sectionKey, containerId) => {
+  const renderEditContainer = (routes, containerId, sectionKey) => {
     const container = document.getElementById(containerId);
     if (!container) return;
-    let html = "";
 
+    let html = "";
     (routes || []).forEach((r, rIdx) => {
       let stopsHtml = (r.stops || []).map((s, sIdx) => `
         <div class="edit-stop-row" style="display:flex; flex-direction:column; gap:4px; padding:6px 8px; background:var(--panel); border-bottom:1px solid var(--line); margin-bottom:4px; border-radius:4px;">
           <div style="display:flex; gap:6px; align-items:center;">
-            <input class="stop-time-input" value="${s.time || ''}" placeholder="Time (e.g. 07:00 AM)" style="width:110px; font-weight:700; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
-            <input class="stop-note-input" value="${s.note || ''}" placeholder="Note (e.g. Station Road)" style="flex:1; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
-            <button type="button" onclick="removeStopRow('${sectionKey}', ${rIdx}, ${sIdx})" style="margin:0; padding:4px 8px; background:#ef4444; color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;">✕</button>
+            <input class="stop-time-input" value="${s.time || ''}" placeholder="Time" style="width:110px; font-weight:700; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+            <input class="stop-note-input" value="${s.note || ''}" placeholder="Note" style="flex:1; font-size:12px; padding:4px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+            <button type="button" onclick="removeStopRow('${sectionKey}', ${rIdx}, ${sIdx})" style="margin:0; padding:4px 8px; background:#ef4444; color:#fff; border:none; border-radius:4px; font-size:11px; cursor:pointer;">✕</button>
           </div>
-          <input class="stop-map-input" value="${s.mapUrl || ''}" placeholder="Google Maps Pin Link (https://maps.google.com/?q=...)" style="font-size:11px; padding:4px; background:var(--paper); color:var(--text); border:1px dashed var(--line); border-radius:4px;" />
+          <input class="stop-map-input" value="${s.mapUrl || ''}" placeholder="Google Maps Pin Link" style="font-size:11px; padding:4px; background:var(--paper); color:var(--text); border:1px dashed var(--line); border-radius:4px;" />
         </div>
       `).join("");
 
@@ -2485,8 +2512,8 @@ function enableInlineScheduleEditing() {
         <div class="edit-route-card" style="border:1.5px solid var(--line); border-radius:8px; padding:10px; margin-bottom:12px; background:var(--paper);">
           <div style="display:flex; gap:6px; margin-bottom:8px; align-items:center;">
             <input class="route-title-input" value="${r.routeTitle || ''}" placeholder="Route Title" style="flex:1; font-weight:700; font-size:13px; padding:6px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
-            <input class="route-color-input" type="color" value="${r.themeColor || '#2563eb'}" style="width:38px; height:32px; padding:0; border:none; cursor:pointer; border-radius:4px;" title="Banner Color" />
-            <button type="button" onclick="removeRouteCard('${sectionKey}', ${rIdx})" style="margin:0; padding:6px 10px; background:#dc2626; color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;">Delete Route</button>
+            <input class="route-color-input" type="color" value="${r.themeColor || '#2563eb'}" style="width:38px; height:32px; padding:0; border:none; cursor:pointer; border-radius:4px;" />
+            <button type="button" onclick="removeRouteCard('${sectionKey}', ${rIdx})" style="margin:0; padding:6px 10px; background:#dc2626; color:#fff; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;">Delete</button>
           </div>
           <div class="edit-stops-container">${stopsHtml}</div>
           <button type="button" onclick="addStopRow('${sectionKey}', ${rIdx})" style="margin-top:6px; padding:4px 10px; background:#3b82f6; color:#fff; border:none; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer;">+ Add Bus Stop</button>
@@ -2498,11 +2525,11 @@ function enableInlineScheduleEditing() {
     container.innerHTML = html;
   };
 
-  renderEditRoutes(activeScheduleData.satThuRoutes, "satThu", "satThuRoutesContainer");
-  renderEditRoutes(activeScheduleData.fridayRoutes, "friday", "fridayRoutesContainer");
+  renderEditContainer(active.satThuRoutes, "satThuRoutesContainer", "satThu");
+  renderEditContainer(active.fridayRoutes, "fridayRoutesContainer", "friday");
 }
 
-function harvestCurrentInputs() {
+function harvestDOMInputs() {
   const active = globalScheduleDoc?.regions?.[currentRegionIndex];
   if (!active) return;
 
@@ -2510,10 +2537,240 @@ function harvestCurrentInputs() {
   const titleEl = document.getElementById("editSchTitle");
   const noticeEl = document.getElementById("editSchNotice");
 
-  if (commEl) active.communityTitle = commEl.value;
-  if (titleEl) active.semesterTitle = titleEl.value;
-  if (noticeEl) active.noticeNote = noticeEl.value;
+  if (commEl) active.communityTitle = commEl.value.trim();
+  if (titleEl) active.semesterTitle = titleEl.value.trim();
+  if (noticeEl) active.noticeNote = noticeEl.value.trim();
 
+  const extractSection = (containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+
+    const cards = container.querySelectorAll(".edit-route-card");
+    const result = [];
+
+    cards.forEach((card) => {
+      const titleInput = card.querySelector(".route-title-input");
+      const colorInput = card.querySelector(".route-color-input");
+      const stopsContainer = card.querySelector(".edit-stops-container");
+
+      const title = titleInput ? titleInput.value.trim() : "Custom Route";
+      const color = colorInput ? colorInput.value : "#2563eb";
+
+      const stopRows = stopsContainer ? stopsContainer.querySelectorAll(".edit-stop-row") : [];
+      const stops = [];
+
+      stopRows.forEach((row) => {
+        const timeInput = row.querySelector(".stop-time-input");
+        const noteInput = row.querySelector(".stop-note-input");
+        const mapInput = row.querySelector(".stop-map-input");
+
+        stops.push({
+          time: timeInput ? timeInput.value.trim() : "",
+          note: noteInput ? noteInput.value.trim() : "",
+          mapUrl: mapInput ? mapInput.value.trim() : ""
+        });
+      });
+
+      result.push({ routeTitle: title, themeColor: color, stops: stops });
+    });
+
+    return result;
+  };
+
+  active.satThuRoutes = extractSection("satThuRoutesContainer");
+  active.fridayRoutes = extractSection("fridayRoutesContainer");
+}
+
+window.addStopRow = function(sectionKey, rIdx) {
+  harvestDOMInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  if (!routes[rIdx].stops) routes[rIdx].stops = [];
+  routes[rIdx].stops.push({ time: "08:00 AM", note: "", mapUrl: "" });
+  enableInlineScheduleEditing();
+};
+
+window.removeStopRow = function(sectionKey, rIdx, sIdx) {
+  harvestDOMInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes[rIdx].stops.splice(sIdx, 1);
+  enableInlineScheduleEditing();
+};
+
+window.addNewRouteCard = function(sectionKey) {
+  harvestDOMInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes.push({
+    routeTitle: "New Route Title",
+    themeColor: "#2563eb",
+    stops: [{ time: "07:30 AM", note: "", mapUrl: "" }]
+  });
+  enableInlineScheduleEditing();
+};
+
+window.removeRouteCard = function(sectionKey, rIdx) {
+  if (!confirm("Remove this route section?")) return;
+  harvestDOMInputs();
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
+  routes.splice(rIdx, 1);
+  enableInlineScheduleEditing();
+};
+
+window.addNewRegionPrompt = function() {
+  const name = prompt("Enter region name (e.g. Uttara, Mirpur):");
+  if (!name || !name.trim()) return;
+  const cleanName = name.trim();
+  const key = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  globalScheduleDoc.regions.push({
+    regionKey: key,
+    regionName: cleanName,
+    communityTitle: `${cleanName} Transport Community`,
+    semesterTitle: "Transport Schedule for Fall 2026",
+    satThuRoutes: [],
+    fridayRoutes: [],
+    noticeNote: ""
+  });
+
+  currentRegionIndex = globalScheduleDoc.regions.length - 1;
+  renderRegionTabs();
+  enableInlineScheduleEditing();
+};
+
+window.removeRegionTab = function(e, idx) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  if (!confirm("Delete region?")) return;
+  globalScheduleDoc.regions.splice(idx, 1);
+  if (currentRegionIndex >= globalScheduleDoc.regions.length) {
+    currentRegionIndex = Math.max(0, globalScheduleDoc.regions.length - 1);
+  }
+  renderRegionTabs();
+  renderScheduleUI();
+};
+
+window.saveScheduleDirect = async function() {
+  harvestDOMInputs();
+
+  const stored = JSON.parse(localStorage.getItem("transport_user") || "null");
+  const actorId = stored?.studentId || (typeof localUser !== "undefined" && localUser?.studentId) || "096";
+
+  try {
+    const res = await fetch("/api/schedule", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        actorStudentId: String(actorId).trim(),
+        regions: globalScheduleDoc.regions
+      })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error);
+
+    globalScheduleDoc = result.schedule;
+    isScheduleEditing = false;
+
+    const editBtn = document.getElementById("toggleScheduleEditBtn");
+    const saveBtn = document.getElementById("saveScheduleBtn");
+    if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
+    if (saveBtn) saveBtn.style.display = "none";
+
+    renderRegionTabs();
+    renderScheduleUI();
+    alert("Changes saved successfully!");
+  } catch (err) {
+    alert("Save failed: " + err.message);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Secure API Request Guard */
+async function secureApiFetch(url, options = {}) {
+  const storedUser = JSON.parse(localStorage.getItem("transport_user") || "null");
+  
+  if (!storedUser || !storedUser.studentId) {
+    alert("Security Alert: You must be logged in with a saved profile to perform this action.");
+    throw new Error("Unauthenticated user session.");
+  }
+
+  // Ensure headers and body include the verified actor credentials
+  options.headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  if (options.body && typeof options.body === "string") {
+    try {
+      const parsedBody = JSON.parse(options.body);
+      parsedBody.actorStudentId = storedUser.studentId;
+      options.body = JSON.stringify(parsedBody);
+    } catch (e) {}
+  }
+
+  const response = await fetch(url, options);
+  if (response.status === 403) {
+    throw new Error("Access Denied: Your account does not have administrative privileges.");
+  }
+  return response;
+}
+window.saveScheduleDirect = async function() {
+  // 1. Get current logged-in user from storage
+  let stored = null;
+  try {
+    stored = JSON.parse(localStorage.getItem("transport_user"));
+  } catch (e) {}
+
+  const actorId = stored?.studentId || 
+                  (typeof localUser !== "undefined" && localUser?.studentId) || 
+                  document.getElementById("profIdInput")?.value?.trim() || 
+                  "096";
+
+  if (!globalScheduleDoc || !Array.isArray(globalScheduleDoc.regions)) {
+    globalScheduleDoc = { regions: [] };
+  }
+
+  if (typeof currentRegionIndex === "undefined" || !globalScheduleDoc.regions[currentRegionIndex]) {
+    currentRegionIndex = 0;
+  }
+
+  const active = globalScheduleDoc.regions[currentRegionIndex];
+  const commEl = document.getElementById("editSchCommunity");
+  const titleEl = document.getElementById("editSchTitle");
+  const noticeEl = document.getElementById("editSchNotice");
+
+  if (commEl && commEl.value) active.communityTitle = commEl.value.trim();
+  if (titleEl && titleEl.value) active.semesterTitle = titleEl.value.trim();
+  if (noticeEl && noticeEl.value) active.noticeNote = noticeEl.value.trim();
+
+  // Harvest data from the edit DOM inputs
   const extractSection = (containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return [];
@@ -2556,80 +2813,6 @@ function harvestCurrentInputs() {
 
   active.satThuRoutes = extractSection("satThuRoutesContainer");
   active.fridayRoutes = extractSection("fridayRoutesContainer");
-}
-
-window.addStopRow = function(sectionKey, rIdx) {
-  harvestCurrentInputs();
-  const active = globalScheduleDoc.regions[currentRegionIndex];
-  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
-  if (!routes[rIdx].stops) routes[rIdx].stops = [];
-  routes[rIdx].stops.push({ time: "08:00 AM", note: "", mapUrl: "" });
-  enableInlineScheduleEditing();
-};
-
-window.removeStopRow = function(sectionKey, rIdx, sIdx) {
-  harvestCurrentInputs();
-  const active = globalScheduleDoc.regions[currentRegionIndex];
-  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
-  routes[rIdx].stops.splice(sIdx, 1);
-  enableInlineScheduleEditing();
-};
-
-window.addNewRouteCard = function(sectionKey) {
-  harvestCurrentInputs();
-  const active = globalScheduleDoc.regions[currentRegionIndex];
-  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
-  routes.push({
-    routeTitle: "New Route Title",
-    themeColor: "#2563eb",
-    stops: [{ time: "07:30 AM", note: "", mapUrl: "" }]
-  });
-  enableInlineScheduleEditing();
-};
-
-window.removeRouteCard = function(sectionKey, rIdx) {
-  if (!confirm("Are you sure you want to remove this route?")) return;
-  harvestCurrentInputs();
-  const active = globalScheduleDoc.regions[currentRegionIndex];
-  const routes = sectionKey === "satThu" ? active.satThuRoutes : active.fridayRoutes;
-  routes.splice(rIdx, 1);
-  enableInlineScheduleEditing();
-};
-
-window.addNewRegionPrompt = function() {
-  const name = prompt("Enter new region name (e.g. Mirpur, Gazipur, Dhanmondi):");
-  if (!name || !name.trim()) return;
-
-  const cleanName = name.trim();
-  const key = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-  globalScheduleDoc.regions.push({
-    regionKey: key,
-    regionName: cleanName,
-    communityTitle: `${cleanName} Transport Community`,
-    semesterTitle: "Transport Schedule for Fall 2026",
-    satThuRoutes: [
-      {
-        routeTitle: `${cleanName} <> DSC`,
-        themeColor: "#2563eb",
-        stops: [{ time: "07:15 AM", note: "", mapUrl: "" }]
-      }
-    ],
-    fridayRoutes: [],
-    noticeNote: "University buses are strictly prohibited without a transport card."
-  });
-
-  currentRegionIndex = globalScheduleDoc.regions.length - 1;
-  renderRegionTabs();
-  renderScheduleUI();
-};
-
-window.saveScheduleDirect = async function() {
-  harvestCurrentInputs();
-
-  const stored = JSON.parse(localStorage.getItem("transport_user") || "null");
-  const formId = document.getElementById("profIdInput")?.value?.trim();
-  const actorId = stored?.studentId || (typeof localUser !== "undefined" && localUser?.studentId) || formId || "096";
 
   const cleanPayload = {
     actorStudentId: String(actorId).trim(),
@@ -2646,7 +2829,7 @@ window.saveScheduleDirect = async function() {
       body: JSON.stringify(cleanPayload)
     });
     const result = await res.json();
-    if (!res.ok) throw new Error(result.error);
+    if (!res.ok) throw new Error(result.error || "Save error");
 
     globalScheduleDoc = result.schedule;
     isScheduleEditing = false;
@@ -2656,8 +2839,8 @@ window.saveScheduleDirect = async function() {
     if (editBtn) editBtn.textContent = "EDIT ROUTES & PINS";
     if (saveBtn) saveBtn.style.display = "none";
 
-    renderRegionTabs();
-    renderScheduleUI();
+    if (typeof renderRegionTabs === "function") renderRegionTabs();
+    if (typeof renderScheduleUI === "function") renderScheduleUI();
     alert("Changes saved successfully!");
   } catch (err) {
     alert("Save failed: " + err.message);
