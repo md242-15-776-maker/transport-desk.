@@ -1282,10 +1282,12 @@ html, body {
   <i class="ti ti-calendar-time"></i>
   <span>Schedule</span>
 </button>
-            <button class="sidebar-item" data-action="routes">
-              <i class="ti ti-route"></i>
-              <span>Routes</span>
-            </button>
+
+
+            <button type="button" id="openRoutesBtn" onclick="openRoutesModalDirect(event)" class="sidebar-item" data-action="routes">
+  <i class="ti ti-route"></i>
+  <span>Routes</span>
+</button>
             <button class="sidebar-item" data-action="rules">
               <i class="ti ti-shield-check"></i>
               <span>Rules</span>
@@ -2433,7 +2435,7 @@ function renderScheduleUI() {
               </svg>
             </a>`
           : "";
-          
+
         return `
           <div style="background:${bg}; padding:9px 12px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--line); font-size:13.5px; font-weight:700; color:var(--text);">
             <span>${s.time}</span>
@@ -2847,6 +2849,351 @@ window.saveScheduleDirect = async function() {
   }
 };
 
+
+/* Interactive Routes, Image Preview & Stoppage Editor */
+let globalRouteDoc = null;
+let currentRouteIndex = 0;
+let isRouteEditing = false;
+
+window.openRoutesModalDirect = async function(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const modal = document.getElementById("routesModal");
+  if (modal) {
+    modal.style.display = "flex";
+    syncRoutesStaffControls();
+    await loadRoutesData();
+    syncRoutesStaffControls();
+  }
+};
+
+function syncRoutesStaffControls() {
+  const controls = document.getElementById("routesStaffEditControls");
+  if (!controls) return;
+  localUser = JSON.parse(localStorage.getItem("transport_user") || "null");
+  const role = (localUser && localUser.role) ? String(localUser.role).toLowerCase() : "";
+  const isStaff = ["superadmin", "admin", "executive"].includes(role);
+  controls.style.display = isStaff ? "flex" : "none";
+}
+
+async function loadRoutesData() {
+  try {
+    const res = await fetch("/api/routemaps");
+    globalRouteDoc = await res.json();
+    if (!globalRouteDoc || !Array.isArray(globalRouteDoc.routes) || globalRouteDoc.routes.length === 0) {
+      globalRouteDoc = { routes: [] };
+    }
+  } catch (err) {
+    globalRouteDoc = { routes: [] };
+  }
+  renderRouteTabs();
+  renderRoutesUI();
+}
+
+function renderRouteTabs() {
+  const tabContainer = document.getElementById("routeTabsContainer");
+  if (!tabContainer || !globalRouteDoc || !globalRouteDoc.routes) return;
+
+  const isStaff = localUser && ["superadmin", "admin", "executive"].includes(String(localUser.role).toLowerCase());
+
+  tabContainer.innerHTML = globalRouteDoc.routes.map((rt, idx) => {
+    const isActive = idx === currentRouteIndex;
+    const activeStyle = isActive
+      ? "background:var(--signal); color:var(--btn-solid-color); border-color:var(--signal); font-weight:800;"
+      : "background:var(--paper); color:var(--slate); border-color:var(--line); font-weight:600;";
+
+    const removeBtn = (isRouteEditing && isStaff && globalRouteDoc.routes.length > 1)
+      ? `<span onclick="removeRouteTab(event, ${idx})" style="margin-left:7px; font-weight:800; color:#ef4444; cursor:pointer;">✕</span>`
+      : "";
+
+    return `
+      <div style="display:inline-flex; align-items:center; border:1px solid; border-radius:6px; padding:5px 10px; font-size:12px; font-family:'IBM Plex Mono', monospace; text-transform:uppercase; ${activeStyle}">
+        <span onclick="switchRouteTab(${idx})" style="cursor:pointer;">${rt.routeName}</span>
+        ${removeBtn}
+      </div>
+    `;
+  }).join("");
+}
+
+window.switchRouteTab = function(idx) {
+  currentRouteIndex = idx;
+  isRouteEditing = false;
+  const editBtn = document.getElementById("toggleRoutesEditBtn");
+  const saveBtn = document.getElementById("saveRoutesBtn");
+  if (editBtn) editBtn.textContent = "EDIT ROUTE & STOPS";
+  if (saveBtn) saveBtn.style.display = "none";
+
+  renderRouteTabs();
+  renderRoutesUI();
+};
+
+function resolveDirectImageUrl(url) {
+  if (!url || typeof url !== "string") return "";
+  let clean = url.trim();
+
+  // Handle Google Drive links
+  if (clean.includes("drive.google.com")) {
+    const fileIdMatch = clean.match(/\/d\/([a-zA-Z0-9_-]+)/) || clean.match(/id=([a-zA-Z0-9_-]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+  }
+
+  // Handle Dropbox links
+  if (clean.includes("dropbox.com")) {
+    return clean.replace("www.dropbox.com", "dl.dropboxusercontent.com").replace("?dl=0", "");
+  }
+
+  // Handle ImgBB links (like the https://ibb.co/C39xVTMZ link you pasted)
+  if (clean.includes("ibb.co/") && !clean.includes("i.ibb.co/")) {
+    const parts = clean.split("ibb.co/")[1].split("/")[0].split("?")[0];
+    return `https://i.ibb.co/${parts}/image.png`;
+  }
+
+  return clean;
+}
+
+
+
+function renderRoutesUI() {
+  if (!globalRouteDoc || !Array.isArray(globalRouteDoc.routes) || !globalRouteDoc.routes[currentRouteIndex]) return;
+  const active = globalRouteDoc.routes[currentRouteIndex];
+
+  document.getElementById("routeModalTitle").textContent = active.routeName || "Bus Route Details";
+
+  const imgContainer = document.getElementById("routeImageContainer");
+  if (active.imageUrl && active.imageUrl.trim()) {
+    const resolvedImg = resolveDirectImageUrl(active.imageUrl);
+
+    const rawTarget = (active.mapLink && active.mapLink.trim()) ? active.mapLink.trim() : resolvedImg;
+    const clickTarget = !rawTarget.startsWith("http://") && !rawTarget.startsWith("https://")
+      ? "https://" + rawTarget
+      : rawTarget;
+
+    imgContainer.innerHTML = `
+      <a href="${clickTarget}" target="_blank" rel="noopener noreferrer" title="Click to view interactive map" style="display:block; position:relative; text-decoration:none; background:var(--panel);">
+        <img 
+  src="${resolvedImg}" 
+  alt="Route Preview" 
+  referrerpolicy="no-referrer"
+          style="width:100%; max-height:260px; object-fit:contain; display:block; margin:0 auto; background:var(--paper);" 
+          onerror="this.style.display='none'; document.getElementById('routeImgFallbackAlert').style.display='block';" 
+        />
+        <div id="routeImgFallbackAlert" style="display:none; padding:22px; text-align:center; color:var(--alert); font-size:12px; font-weight:700;">
+          ⚠️ Image preview unavailable. Verify image link permissions.
+        </div>
+        <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.8); color:#ffffff; font-size:11px; font-weight:700; padding:4px 9px; border-radius:4px; font-family:'Inter', sans-serif; box-shadow:0 2px 4px rgba(0,0,0,0.3);">
+          Open Map ↗
+        </div>
+      </a>
+      ${active.imageCaption ? `
+        <div style="padding:10px 14px; font-size:12.5px; font-weight:700; color:var(--text); background:var(--panel); border-top:1px solid var(--line); text-align:center; font-family:'Inter', sans-serif; line-height:1.4;">
+          ${active.imageCaption}
+        </div>
+      ` : ""}
+    `;
+    imgContainer.style.display = "block";
+  } else {
+    imgContainer.innerHTML = "";
+    imgContainer.style.display = "none";
+  }
+
+  const container = document.getElementById("routeStoppagesContainer");
+  const stops = active.stops || [];
+  if (stops.length === 0) {
+    container.innerHTML = `<p style="text-align:center; color:var(--slate); font-size:13px; margin:10px 0;">No stoppages listed for this route.</p>`;
+    return;
+  }
+
+  container.innerHTML = stops.map((s, idx) => {
+    const bg = idx % 2 === 0 ? "rgba(255, 255, 255, 0.05)" : "var(--panel)";
+    const rawMap = s.mapUrl ? s.mapUrl.trim() : "";
+    const mapHref = rawMap && !rawMap.startsWith("http://") && !rawMap.startsWith("https://") 
+      ? "https://" + rawMap 
+      : rawMap;
+
+    const pinBtn = mapHref
+      ? `<a href="${mapHref}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:rgba(239, 68, 68, 0.14); border:1px solid rgba(239, 68, 68, 0.45); color:#ef4444; margin-left:8px; text-decoration:none;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="#ef4444" stroke="#ef4444" stroke-width="1.2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        </a>`
+      : "";
+
+    return `
+      <div style="background:${bg}; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); font-size:13.5px; font-weight:700; color:var(--text);">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--signal);">#${idx + 1}</span>
+          <span>${s.stopName}</span>
+          ${s.landmark ? `<span style="font-weight:600; color:var(--slate); font-size:12px;">(${s.landmark})</span>` : ""}
+        </div>
+        ${pinBtn}
+      </div>
+    `;
+  }).join("");
+}
+
+window.toggleRoutesEditDirect = function() {
+  isRouteEditing = !isRouteEditing;
+  const editBtn = document.getElementById("toggleRoutesEditBtn");
+  const saveBtn = document.getElementById("saveRoutesBtn");
+
+  if (editBtn) editBtn.textContent = isRouteEditing ? "CANCEL EDIT" : "EDIT ROUTE & STOPS";
+  if (saveBtn) saveBtn.style.display = isRouteEditing ? "inline-block" : "none";
+
+  renderRouteTabs();
+
+  if (isRouteEditing) {
+    renderRoutesEditMode();
+  } else {
+    renderRoutesUI();
+  }
+};
+
+function renderRoutesEditMode() {
+  const active = globalRouteDoc?.routes?.[currentRouteIndex];
+  if (!active) return;
+
+  const titleContainer = document.getElementById("routeModalTitle");
+  const imgContainer = document.getElementById("routeImageContainer");
+
+  if (titleContainer) {
+    titleContainer.innerHTML = `<input id="editRouteName" value="${active.routeName || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]) globalRouteDoc.routes[currentRouteIndex].routeName=this.value" placeholder="Route Name" style="width:100%; text-align:center; font-weight:800; font-size:18px; padding:6px; background:var(--panel); color:var(--signal); border:1px solid var(--line); border-radius:4px;" />`;
+  }
+  
+  if (imgContainer) {
+    imgContainer.innerHTML = `
+      <div style="padding:12px; background:var(--panel); display:flex; flex-direction:column; gap:8px; text-align:left;">
+        <div>
+          <label style="display:block; font-size:11px; font-weight:700; color:var(--slate); margin-bottom:3px;">1. Screenshot / Image URL (e.g. /tongi-map.png or https://...):</label>
+          <input id="editRouteImageUrl" value="${active.imageUrl || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]) globalRouteDoc.routes[currentRouteIndex].imageUrl=this.value" placeholder="Image URL" style="width:100%; font-size:12px; padding:6px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; font-weight:700; color:var(--signal); margin-bottom:3px;">2. Click Destination Link (Google Maps Route URL):</label>
+          <input id="editRouteMapLink" value="${active.mapLink || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]) globalRouteDoc.routes[currentRouteIndex].mapLink=this.value" placeholder="Google Maps route link" style="width:100%; font-size:12px; padding:6px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; font-weight:700; color:var(--slate); margin-bottom:3px;">3. Image Caption:</label>
+          <input id="editRouteImageCaption" value="${active.imageCaption || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]) globalRouteDoc.routes[currentRouteIndex].imageCaption=this.value" placeholder="Image Caption" style="width:100%; font-size:12px; padding:6px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+        </div>
+      </div>
+    `;
+    imgContainer.style.display = "block";
+  }
+
+  const container = document.getElementById("routeStoppagesContainer");
+  if (!container) return;
+  if (!active.stops) active.stops = [];
+
+  let stopsHtml = active.stops.map((s, sIdx) => `
+    <div style="display:flex; flex-direction:column; gap:4px; padding:8px; background:var(--panel); border-bottom:1px solid var(--line); margin-bottom:6px; border-radius:4px;">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <input value="${s.stopName || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]?.stops[${sIdx}]) globalRouteDoc.routes[currentRouteIndex].stops[${sIdx}].stopName=this.value" placeholder="Stop Name" style="flex:1; font-weight:700; font-size:12px; padding:5px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+        <input value="${s.landmark || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]?.stops[${sIdx}]) globalRouteDoc.routes[currentRouteIndex].stops[${sIdx}].landmark=this.value" placeholder="Landmark / Note" style="flex:1; font-size:12px; padding:5px; background:var(--paper); color:var(--text); border:1px solid var(--line); border-radius:4px;" />
+        <button type="button" onclick="removeRouteStop(${sIdx})" style="margin:0; padding:4px 8px; background:#ef4444; color:#fff; border:none; border-radius:4px; font-size:11px; cursor:pointer;">✕</button>
+      </div>
+      <input value="${s.mapUrl || ''}" oninput="if(globalRouteDoc.routes[currentRouteIndex]?.stops[${sIdx}]) globalRouteDoc.routes[currentRouteIndex].stops[${sIdx}].mapUrl=this.value" placeholder="Google Maps Pin Link" style="font-size:11px; padding:4px; background:var(--paper); color:var(--text); border:1px dashed var(--line); border-radius:4px;" />
+    </div>
+  `).join("");
+
+  container.innerHTML = `
+    <div style="background:var(--paper); padding:10px; border-radius:8px; border:1.5px solid var(--line);">
+      <div>${stopsHtml}</div>
+      <button type="button" onclick="addRouteStop()" style="width:100%; margin-top:8px; padding:6px; background:#3b82f6; color:#fff; border:none; font-weight:700; font-size:12px; border-radius:4px; cursor:pointer;">+ Add Stoppage</button>
+    </div>
+  `;
+}
+
+window.addRouteStop = function() {
+  const active = globalRouteDoc.routes[currentRouteIndex];
+  if (!active.stops) active.stops = [];
+  active.stops.push({ stopName: "New Stop", landmark: "", mapUrl: "" });
+  renderRoutesEditMode();
+};
+
+window.removeRouteStop = function(sIdx) {
+  const active = globalRouteDoc.routes[currentRouteIndex];
+  active.stops.splice(sIdx, 1);
+  renderRoutesEditMode();
+};
+
+window.addNewRouteTabPrompt = function() {
+  const name = prompt("Enter new route title (e.g. Mirpur, Gazipur):");
+  if (!name || !name.trim()) return;
+  const cleanName = name.trim();
+  const key = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  globalRouteDoc.routes.push({
+    routeKey: key,
+    routeName: cleanName,
+    imageUrl: "",
+    mapLink: "",
+    imageCaption: "",
+    stops: [{ stopName: "Starting Stop", landmark: "", mapUrl: "" }]
+  });
+
+  currentRouteIndex = globalRouteDoc.routes.length - 1;
+  renderRouteTabs();
+  renderRoutesEditMode();
+};
+
+window.removeRouteTab = function(e, idx) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  if (!confirm("Delete this entire route?")) return;
+  globalRouteDoc.routes.splice(idx, 1);
+  if (currentRouteIndex >= globalRouteDoc.routes.length) {
+    currentRouteIndex = Math.max(0, globalRouteDoc.routes.length - 1);
+  }
+  renderRouteTabs();
+  renderRoutesUI();
+};
+
+window.saveRoutesDirect = async function() {
+  try {
+    const stored = JSON.parse(localStorage.getItem("transport_user") || "null");
+    const formId = document.getElementById("profIdInput")?.value?.trim();
+    const actorId = stored?.studentId || (typeof localUser !== "undefined" && localUser?.studentId) || formId || "096";
+
+    const nameEl = document.getElementById("editRouteName");
+    const imgEl = document.getElementById("editRouteImageUrl");
+    const mapEl = document.getElementById("editRouteMapLink");
+    const capEl = document.getElementById("editRouteImageCaption");
+
+    
+    if (globalRouteDoc?.routes?.[currentRouteIndex]) {
+      if (nameEl) globalRouteDoc.routes[currentRouteIndex].routeName = nameEl.value.trim();
+      if (imgEl) globalRouteDoc.routes[currentRouteIndex].imageUrl = imgEl.value.trim();
+      if (mapEl) globalRouteDoc.routes[currentRouteIndex].mapLink = mapEl.value.trim();
+      if (capEl) globalRouteDoc.routes[currentRouteIndex].imageCaption = capEl.value.trim();
+    }
+
+    const payload = {
+      actorStudentId: String(actorId).trim(),
+      routes: globalRouteDoc.routes
+    };
+
+    const res = await fetch("/api/routemaps", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Save error");
+
+    globalRouteDoc = result.routeMap;
+    isRouteEditing = false;
+
+    const editBtn = document.getElementById("toggleRoutesEditBtn");
+    const saveBtn = document.getElementById("saveRoutesBtn");
+    if (editBtn) editBtn.textContent = "EDIT ROUTE & STOPS";
+    if (saveBtn) saveBtn.style.display = "none";
+
+    renderRouteTabs();
+    renderRoutesUI();
+    alert("Routes saved successfully!");
+  } catch (err) {
+    alert("Save failed: " + err.message);
+  }
+};
+
 </script>
 
 <!-- Notice Modal -->
@@ -2925,6 +3272,41 @@ window.saveScheduleDirect = async function() {
       <div>
         <button type="button" id="toggleScheduleEditBtn" onclick="toggleScheduleEditDirect()" style="background:var(--ink); color:#ffffff; border:1px solid var(--line); font-size:12px; padding:7px 15px; border-radius:5px; font-weight:700; cursor:pointer;">EDIT ROUTES & PINS</button>
         <button type="button" id="saveScheduleBtn" onclick="saveScheduleDirect()" style="display:none; background:var(--signal); color:var(--btn-solid-color); border:none; font-size:12px; padding:7px 16px; border-radius:5px; font-weight:700; cursor:pointer; margin-left:6px;">Save All Changes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Bus Routes & Map Preview Modal -->
+<div id="routesModal" onclick="if(event.target === this) this.style.display='none'" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(6px); padding:16px;">
+  <div style="background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:14px; width:100%; max-width:640px; max-height:90vh; overflow-y:auto; box-shadow:var(--float-shadow); position:relative; padding:24px 22px 20px; font-family:'Inter', sans-serif;">
+    
+    <!-- Top Row: Route Switcher Bar & Close Button -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:18px; gap:8px;">
+      <div id="routeTabsContainer" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"></div>
+      <button type="button" onclick="document.getElementById('routesModal').style.display='none'" style="background:transparent; border:none; font-size:24px; color:var(--slate); cursor:pointer; line-height:1; padding:2px 6px;">&times;</button>
+    </div>
+
+    <!-- Header / Image Preview Section -->
+    <div style="text-align:center; margin-bottom:18px;">
+      <h2 id="routeModalTitle" style="margin:0; font-family:'Space Grotesk', serif; font-size:24px; font-weight:800; color:var(--signal);">Bus Route Details</h2>
+     <div id="routeImageContainer" style="margin-top:14px; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:var(--paper);"></div>
+     </div>
+
+    <!-- Stoppages Section Heading -->
+    <div style="text-align:center; margin:16px 0 10px;">
+      <span style="background:#fde047; color:#0f172a; font-weight:800; font-size:13.5px; padding:3px 18px; border-radius:4px; display:inline-block;">Stoppages & Landmarks</span>
+    </div>
+    <div id="routeStoppagesContainer"></div>
+
+    <!-- Staff Controls Bar -->
+    <div id="routesStaffEditControls" style="display:none; margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <button type="button" onclick="addNewRouteTabPrompt()" style="background:transparent; border:1px dashed var(--signal); color:var(--signal); font-size:11.5px; padding:6px 12px; border-radius:5px; font-weight:700; cursor:pointer;">+ Add New Route Tab</button>
+      <div>
+        <button type="button" id="toggleRoutesEditBtn" onclick="toggleRoutesEditDirect()" style="background:var(--ink); color:#ffffff; border:1px solid var(--line); font-size:12px; padding:7px 15px; border-radius:5px; font-weight:700; cursor:pointer;">EDIT ROUTE & STOPS</button>
+        <button type="button" id="saveRoutesBtn" onclick="saveRoutesDirect()" style="display:none; background:var(--signal); color:var(--btn-solid-color); border:none; font-size:12px; padding:7px 16px; border-radius:5px; font-weight:700; cursor:pointer; margin-left:6px;">Save All Changes</button>
       </div>
     </div>
 

@@ -13,6 +13,7 @@ const scheduleRoutes = require("./routes/scheduleRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const routeMapRoutes = require("./routes/routeMapRoutes");
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
@@ -20,12 +21,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// API Endpoints
+// API Endpoints (Must be placed AFTER express.json())
 app.use("/api", routineRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notices", noticeRoutes);
 app.use("/api/schedule", scheduleRoutes);
-
+app.use("/api/routemaps", routeMapRoutes);
 // Lightweight health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
